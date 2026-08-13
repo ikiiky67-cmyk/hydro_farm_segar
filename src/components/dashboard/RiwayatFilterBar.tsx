@@ -20,7 +20,7 @@ export function RiwayatFilterBar({ products, currentProductId, currentType }: Pr
 
   return (
     <select
-      className="flex-1 border rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 min-w-0"
+      className="flex-1 border rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500/30 min-w-0"
       style={{
         background: "var(--t-input-bg)",
         borderColor: "var(--t-input-border)",

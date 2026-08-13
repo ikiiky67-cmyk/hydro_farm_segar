@@ -16,7 +16,7 @@ const inputStyle = {
 } as React.CSSProperties;
 
 const inputClass =
-  "w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all";
+  "w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all";
 
 function PromoCard({ promo }: { promo: PromoContent }) {
   const router = useRouter();
@@ -28,17 +28,17 @@ function PromoCard({ promo }: { promo: PromoContent }) {
       className="relative rounded-2xl border p-5 transition-all duration-200"
       style={{
         background: "var(--t-card-bg)",
-        borderColor: isActive ? "rgba(16,185,129,0.25)" : "var(--t-card-border)",
+        borderColor: isActive ? "rgba(99,102,241,0.25)" : "var(--t-card-border)",
         opacity: isActive ? 1 : 0.65,
       }}
     >
       {promo.badgeText && (
-        <span className="absolute top-4 right-4 text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-500 text-white">
+        <span className="absolute top-4 right-4 text-xs font-bold px-2.5 py-1 rounded-lg bg-indigo-500 text-white">
           {promo.badgeText}
         </span>
       )}
-      <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center mb-3">
-        <Tag className="w-4 h-4 text-emerald-500" />
+      <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center mb-3">
+        <Tag className="w-4 h-4 text-indigo-400" />
       </div>
       <h3 className="font-bold mb-1 pr-20" style={{ color: "var(--t-text-primary)" }}>
         {promo.title}
@@ -62,7 +62,7 @@ function PromoCard({ promo }: { promo: PromoContent }) {
           disabled={pending}
           className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-all ${
             isActive
-              ? "bg-emerald-500/15 text-emerald-500 hover:bg-emerald-500/25"
+              ? "bg-indigo-500/15 text-indigo-400 hover:bg-indigo-500/25"
               : "bg-zinc-500/10 hover:bg-zinc-500/20"
           }`}
           style={isActive ? {} : { color: "var(--t-text-muted)" }}
@@ -158,7 +158,7 @@ function AddPromoForm({ onClose }: { onClose: () => void }) {
         <Button
           type="submit"
           disabled={pending}
-          className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl font-semibold"
+          className="flex-1 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl font-semibold"
         >
           {pending ? "Menyimpan..." : "Tambah"}
         </Button>
@@ -183,7 +183,7 @@ export function PromoManager({ promos }: { promos: PromoContent[] }) {
         </div>
         <button
           onClick={() => setAddOpen(true)}
-          className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+          className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)]"
         >
           <Plus className="w-4 h-4" />
           Tambah Promo

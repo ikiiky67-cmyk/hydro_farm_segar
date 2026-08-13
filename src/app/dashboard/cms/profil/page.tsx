@@ -18,8 +18,8 @@ export default async function ProfilPage() {
       </div>
 
       <div
-        className="flex items-center gap-2 text-xs text-emerald-500 rounded-xl px-4 py-3 border transition-theme"
-        style={{ background: "rgba(16,185,129,0.08)", borderColor: "rgba(16,185,129,0.2)" }}
+        className="flex items-center gap-2 text-xs text-indigo-400 rounded-xl px-4 py-3 border transition-theme"
+        style={{ background: "rgba(99,102,241,0.08)", borderColor: "rgba(99,102,241,0.2)" }}
       >
         <Globe className="w-4 h-4 flex-shrink-0" />
         <span>Perubahan akan langsung terlihat di halaman publik <strong>/</strong> setelah disimpan.</span>
@@ -30,8 +30,8 @@ export default async function ProfilPage() {
         style={{ background: "var(--t-card-bg)", borderColor: "var(--t-card-border)" }}
       >
         <div className="flex items-center gap-3 mb-6 pb-5" style={{ borderBottom: "1px solid var(--t-divider)" }}>
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center">
-            <Store className="w-5 h-5 text-emerald-500" />
+          <div className="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center">
+            <Store className="w-5 h-5 text-indigo-400" />
           </div>
           <div>
             <p className="font-semibold" style={{ color: "var(--t-text-primary)" }}>Informasi Usaha</p>

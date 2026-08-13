@@ -18,9 +18,9 @@ export default async function LaporanPage() {
       value: laporan.totalPenjualan,
       count: laporan.countPenjualan,
       countLabel: "transaksi penjualan",
-      color: "#10b981",
-      borderColor: "rgba(16,185,129,0.25)",
-      iconBg: "bg-emerald-500/15 text-emerald-500 border border-emerald-500/25",
+      color: "#6366f1",
+      borderColor: "rgba(99,102,241,0.25)",
+      iconBg: "bg-indigo-500/15 text-indigo-400 border border-indigo-500/25",
       icon: ShoppingCart,
     },
     {
@@ -49,7 +49,7 @@ export default async function LaporanPage() {
       {/* ── Pemasukan ── */}
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="w-4 h-4 text-emerald-500" />
+          <TrendingUp className="w-4 h-4 text-indigo-400" />
           <h2 className="text-sm font-bold uppercase tracking-wide" style={{ color: "var(--t-text-secondary)" }}>
             Pemasukan
           </h2>
@@ -83,12 +83,12 @@ export default async function LaporanPage() {
         {/* Total Pemasukan */}
         <div
           className="mt-3 rounded-xl px-5 py-3 flex items-center justify-between"
-          style={{ background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.2)" }}
+          style={{ background: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.2)" }}
         >
           <p className="text-sm font-semibold" style={{ color: "var(--t-text-secondary)" }}>
             Total Pemasukan
           </p>
-          <p className="font-bold text-emerald-500">{formatRupiah(laporan.totalPemasukan)}</p>
+          <p className="font-bold text-indigo-400">{formatRupiah(laporan.totalPemasukan)}</p>
         </div>
       </div>
 
@@ -163,7 +163,7 @@ export default async function LaporanPage() {
         className="rounded-2xl border p-6 transition-theme"
         style={{
           background: "var(--t-card-bg)",
-          borderColor: isProfit ? "rgba(16,185,129,0.3)" : "rgba(244,63,94,0.3)",
+          borderColor: isProfit ? "rgba(99,102,241,0.3)" : "rgba(244,63,94,0.3)",
         }}
       >
         <div className="flex items-center justify-between flex-wrap gap-4">
@@ -171,8 +171,8 @@ export default async function LaporanPage() {
             <div
               className="w-12 h-12 rounded-2xl flex items-center justify-center"
               style={{
-                background: isProfit ? "rgba(16,185,129,0.15)" : "rgba(244,63,94,0.15)",
-                color: isProfit ? "#10b981" : "#f43f5e",
+                background: isProfit ? "rgba(99,102,241,0.15)" : "rgba(244,63,94,0.15)",
+                color: isProfit ? "#6366f1" : "#f43f5e",
               }}
             >
               <ArrowUpDown className="w-6 h-6" />
@@ -186,7 +186,7 @@ export default async function LaporanPage() {
               </p>
             </div>
           </div>
-          <p className="text-3xl font-bold" style={{ color: isProfit ? "#10b981" : "#f43f5e" }}>
+          <p className="text-3xl font-bold" style={{ color: isProfit ? "#6366f1" : "#f43f5e" }}>
             {isProfit ? "+" : ""}{formatRupiah(laporan.labaRugi)}
           </p>
         </div>
@@ -194,7 +194,7 @@ export default async function LaporanPage() {
         <div className="mt-4 pt-4 text-sm" style={{ borderTop: "1px solid var(--t-divider)", color: "var(--t-text-secondary)" }}>
           <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs">
             <span>
-              Penjualan: <strong className="text-emerald-500">{formatRupiah(laporan.totalPenjualan)}</strong>
+              Penjualan: <strong className="text-indigo-400">{formatRupiah(laporan.totalPenjualan)}</strong>
             </span>
             <span>
               Pemasukan Lain: <strong className="text-sky-400">{formatRupiah(laporan.totalPemasukanLain)}</strong>
@@ -205,7 +205,7 @@ export default async function LaporanPage() {
           </div>
           <p className="mt-2">
             ({formatRupiah(laporan.totalPemasukan)}) − ({formatRupiah(laporan.totalPengeluaran)}) ={" "}
-            <span className="font-semibold" style={{ color: isProfit ? "#10b981" : "#f43f5e" }}>
+            <span className="font-semibold" style={{ color: isProfit ? "#6366f1" : "#f43f5e" }}>
               {formatRupiah(laporan.labaRugi)}
             </span>
           </p>

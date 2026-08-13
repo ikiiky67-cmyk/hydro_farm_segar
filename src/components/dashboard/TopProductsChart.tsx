@@ -10,18 +10,18 @@ interface TopProductsChartProps {
   data: Array<{ name: string; qty: number }>;
 }
 
-const COLORS = ["#10b981", "#34d399", "#6ee7b7", "#a7f3d0", "#059669"];
+const COLORS = ["#6366f1", "#818cf8", "#a5b4fc", "#c7d2fe", "#4f46e5"];
 
 export function TopProductsChart({ data }: TopProductsChartProps) {
   const { theme } = useTheme();
   const isLight = theme === "light";
 
-  const gridColor    = isLight ? "#c8e0c8" : "#27272a";
-  const tickMuted    = isLight ? "#6b9a6b" : "#71717a";
-  const tickSecond   = isLight ? "#3d6b3d" : "#a1a1aa";
-  const tooltipBg    = isLight ? "#ffffff" : "#18181b";
-  const tooltipBorder= isLight ? "#c8e0c8" : "#3f3f46";
-  const tooltipText  = isLight ? "#1a2e1a" : "#f4f4f5";
+  const gridColor    = isLight ? "#d5d5f0" : "#1e1b4b";
+  const tickMuted    = isLight ? "#6366a0" : "#6e6e8a";
+  const tickSecond   = isLight ? "#4338ca" : "#a5a5c0";
+  const tooltipBg    = isLight ? "#ffffff" : "#0f0e1e";
+  const tooltipBorder= isLight ? "#d5d5f0" : "#2e2b50";
+  const tooltipText  = isLight ? "#1e1b4b" : "#f0f0f5";
 
   return (
     <motion.div

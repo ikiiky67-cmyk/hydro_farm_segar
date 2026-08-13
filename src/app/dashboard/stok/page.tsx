@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = { title: "Manajemen Stok" };
 
 const movementTypeConfig = {
-  PANEN_MASUK: { label: "Panen Masuk",   icon: TrendingUp,   badge: "bg-emerald-500/15 text-emerald-500" },
+  PANEN_MASUK: { label: "Panen Masuk",   icon: TrendingUp,   badge: "bg-indigo-500/15 text-indigo-400" },
   TERJUAL:     { label: "Terjual",        icon: TrendingDown, badge: "bg-sky-500/15 text-sky-400" },
   RUSAK:       { label: "Rusak/Terbuang", icon: Trash2,       badge: "bg-rose-500/15 text-rose-400" },
   PENYESUAIAN: { label: "Penyesuaian",   icon: RotateCcw,    badge: "bg-amber-500/15 text-amber-400" },
@@ -71,9 +71,9 @@ export default async function StokPage() {
             href="/dashboard/stok/riwayat"
             className="ml-auto flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all hover:opacity-80"
             style={{
-              background: "rgba(16,185,129,0.1)",
-              borderColor: "rgba(16,185,129,0.3)",
-              color: "#10b981",
+              background: "rgba(99,102,241,0.1)",
+              borderColor: "rgba(99,102,241,0.3)",
+              color: "#6366f1",
             }}
           >
             Lihat Riwayat Lengkap
@@ -118,7 +118,7 @@ export default async function StokPage() {
                     {showNilai && price > 0 && (
                       <p
                         className="text-xs font-semibold"
-                        style={{ color: m.type === "TERJUAL" ? "#10b981" : "#f43f5e" }}
+                        style={{ color: m.type === "TERJUAL" ? "#6366f1" : "#f43f5e" }}
                       >
                         {m.type === "TERJUAL" ? "+" : "−"}{formatRupiah(nilai)}
                       </p>
@@ -142,7 +142,7 @@ export default async function StokPage() {
             <Link
               href="/dashboard/stok/riwayat"
               className="flex items-center gap-2 text-sm font-semibold transition-colors hover:opacity-80"
-              style={{ color: "#10b981" }}
+              style={{ color: "#6366f1" }}
             >
               Lihat Semua Riwayat
               <ArrowRight className="w-4 h-4" />

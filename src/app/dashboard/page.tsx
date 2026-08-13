@@ -25,7 +25,7 @@ export default async function DashboardPage() {
       value: `Rp ${metrics.revenue.toLocaleString("id-ID")}`,
       subtitle: "Dari penjualan produk",
       icon: <TrendingUp className="w-5 h-5" strokeWidth={1.8} />,
-      colorVariant: "green" as const,
+      colorVariant: "indigo" as const,
       trend: "up" as const,
       trendValue: "Bulan ini",
       delay: 0,
@@ -108,7 +108,7 @@ export default async function DashboardPage() {
                     {formatDate(tx.occurredAt)}
                   </p>
                 </div>
-                <span className="text-sm font-semibold text-emerald-500">
+                <span className="text-sm font-semibold text-indigo-400">
                   +{formatRupiah(parseFloat(tx.totalAmount.toString()))}
                 </span>
               </div>

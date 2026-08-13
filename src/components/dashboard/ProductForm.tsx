@@ -29,7 +29,7 @@ const inputStyle = {
 } as React.CSSProperties;
 
 const inputClass =
-  "w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all";
+  "w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all";
 
 const labelClass = "text-xs font-semibold uppercase tracking-wide mb-2 block";
 
@@ -131,7 +131,7 @@ export function ProductForm({ product }: { product?: SerializedProduct | null })
               /produk/
             </span>
             <span
-              className="font-mono text-emerald-500 text-xs truncate"
+              className="font-mono text-indigo-400 text-xs truncate"
               title={slug}
             >
               {slug || <span style={{ color: "var(--t-text-muted)" }}>akan-terisi-otomatis</span>}
@@ -256,7 +256,7 @@ export function ProductForm({ product }: { product?: SerializedProduct | null })
                 value="true"
               />
               <div
-                className="w-10 h-6 rounded-full transition-colors duration-200 peer-checked:bg-emerald-500"
+                className="w-10 h-6 rounded-full transition-colors duration-200 peer-checked:bg-indigo-500"
                 style={{ background: "var(--t-input-border)" }}
               />
               <div className="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 peer-checked:translate-x-4" />
@@ -302,7 +302,7 @@ export function ProductForm({ product }: { product?: SerializedProduct | null })
         <Button
           type="submit"
           disabled={pending}
-          className="bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl font-semibold gap-2 shadow-[0_0_20px_rgba(16,185,129,0.2)] disabled:opacity-60"
+          className="bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl font-semibold gap-2 shadow-[0_0_20px_rgba(99,102,241,0.2)] disabled:opacity-60"
         >
           <Save className="w-4 h-4" />
           {pending ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Tambah Produk"}

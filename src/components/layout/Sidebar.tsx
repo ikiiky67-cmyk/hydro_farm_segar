@@ -7,14 +7,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Package, Warehouse, Receipt, BarChart3,
-  Settings, Leaf, ChevronRight, Globe, Image, Menu, X, FileText,
+  Settings, TrendingUp, ChevronRight, Globe, Image, Menu, X, FileText,
 } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, exact: true },
+  { label: "Transaksi", href: "/dashboard/transaksi", icon: Receipt },
   { label: "Produk", href: "/dashboard/produk", icon: Package },
   { label: "Stok", href: "/dashboard/stok", icon: Warehouse },
-  { label: "Transaksi", href: "/dashboard/transaksi", icon: Receipt },
   { label: "Laporan L/R", href: "/dashboard/laporan", icon: BarChart3 },
   { type: "separator", label: "CMS" } as const,
   { label: "Profil Bisnis", href: "/dashboard/cms/profil", icon: Settings },
@@ -30,12 +30,14 @@ function SidebarContent({ pathname, onLinkClick }: { pathname: string; onLinkCli
       {/* Logo */}
       <div className="h-16 flex items-center px-6 border-b t-divider flex-shrink-0 transition-theme">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shadow-[0_0_12px_rgba(16,185,129,0.15)]">
-            <Leaf className="w-4.5 h-4.5 text-emerald-500" />
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-[0_0_16px_rgba(99,102,241,0.2)]"
+            style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", }}
+          >
+            <TrendingUp className="w-4.5 h-4.5 text-white" />
           </div>
           <div>
             <p className="text-sm font-bold t-text-primary tracking-tight">HydroFarm</p>
-            <p className="text-[10px] text-emerald-500/80 font-semibold tracking-widest uppercase">Admin Panel</p>
+            <p className="text-[10px] font-semibold tracking-widest uppercase" style={{ color: "#818cf8" }}>Sales Dashboard</p>
           </div>
         </div>
       </div>
@@ -85,7 +87,11 @@ function SidebarContent({ pathname, onLinkClick }: { pathname: string; onLinkCli
                   {active && (
                     <motion.div
                       layoutId="sidebar-active"
-                      className="absolute inset-0 rounded-xl bg-emerald-500/10 border border-emerald-500/25"
+                      className="absolute inset-0 rounded-xl"
+                      style={{
+                        background: "rgba(99,102,241,0.1)",
+                        border: "1px solid rgba(99,102,241,0.25)",
+                      }}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
@@ -96,13 +102,13 @@ function SidebarContent({ pathname, onLinkClick }: { pathname: string; onLinkCli
                 <Icon
                   className={cn(
                     "w-4 h-4 relative z-10 flex-shrink-0 transition-colors",
-                    active ? "text-emerald-500" : ""
+                    active ? "" : ""
                   )}
-                  style={{ color: active ? "#10b981" : "var(--t-text-muted)" }}
+                  style={{ color: active ? "#818cf8" : "var(--t-text-muted)" }}
                 />
                 <span className="relative z-10 flex-1" style={{ color: "inherit" }}>{item.label}</span>
                 {active && (
-                  <ChevronRight className="w-3 h-3 text-emerald-400/60 relative z-10 flex-shrink-0" />
+                  <ChevronRight className="w-3 h-3 relative z-10 flex-shrink-0" style={{ color: "rgba(129,140,248,0.6)" }} />
                 )}
               </motion.div>
             </Link>

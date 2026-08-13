@@ -36,10 +36,10 @@ const ACTIONS: {
     label: "Panen Masuk",
     sublabel: "Restok",
     icon: TrendingUp,
-    color: "#10b981",
-    bg: "rgba(16,185,129,0.12)",
-    border: "rgba(16,185,129,0.35)",
-    badgeCls: "bg-emerald-500/15 text-emerald-500",
+    color: "#6366f1",
+    bg: "rgba(99,102,241,0.12)",
+    border: "rgba(99,102,241,0.35)",
+    badgeCls: "bg-indigo-500/15 text-indigo-400",
   },
   {
     type: "TERJUAL",
@@ -130,7 +130,7 @@ export function StokPOS({ products }: { products: Product[] }) {
   };
 
   const stockColor = (stock: number) =>
-    stock < 1 ? "#f43f5e" : stock < 5 ? "#f59e0b" : "#10b981";
+    stock < 1 ? "#f43f5e" : stock < 5 ? "#f59e0b" : "#6366f1";
 
   return (
     <div className="flex gap-6">
@@ -156,9 +156,9 @@ export function StokPOS({ products }: { products: Product[] }) {
                   onClick={() => openPanel(p)}
                   className="text-left rounded-2xl border overflow-hidden transition-all duration-200 focus:outline-none"
                   style={{
-                    background: isSelected ? "rgba(16,185,129,0.06)" : "var(--t-card-bg)",
-                    borderColor: isSelected ? "rgba(16,185,129,0.5)" : "var(--t-card-border)",
-                    boxShadow: isSelected ? "0 0 0 2px rgba(16,185,129,0.3)" : "none",
+                    background: isSelected ? "rgba(99,102,241,0.06)" : "var(--t-card-bg)",
+                    borderColor: isSelected ? "rgba(99,102,241,0.5)" : "var(--t-card-border)",
+                    boxShadow: isSelected ? "0 0 0 2px rgba(99,102,241,0.3)" : "none",
                   }}
                 >
                   {/* Foto */}
@@ -304,7 +304,7 @@ export function StokPOS({ products }: { products: Product[] }) {
                     step="0.01"
                     value={qty}
                     onChange={(e) => setQty(parseFloat(e.target.value) || 0)}
-                    className="flex-1 text-center border rounded-xl px-3 py-2.5 text-sm font-bold outline-none focus:ring-2 focus:ring-emerald-500/30"
+                    className="flex-1 text-center border rounded-xl px-3 py-2.5 text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500/30"
                     style={{
                       background: "var(--t-input-bg)",
                       borderColor: "var(--t-input-border)",
@@ -332,7 +332,7 @@ export function StokPOS({ products }: { products: Product[] }) {
                     value={buyerName}
                     onChange={(e) => setBuyerName(e.target.value)}
                     placeholder="Nama pembeli..."
-                    className="w-full border rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30"
+                    className="w-full border rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/30"
                     style={{
                       background: "var(--t-input-bg)",
                       borderColor: "var(--t-input-border)",
@@ -352,7 +352,7 @@ export function StokPOS({ products }: { products: Product[] }) {
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder="Tambahkan catatan..."
-                  className="w-full border rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30"
+                  className="w-full border rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/30"
                   style={{
                     background: "var(--t-input-bg)",
                     borderColor: "var(--t-input-border)",
@@ -365,10 +365,10 @@ export function StokPOS({ products }: { products: Product[] }) {
               {selectedAction === "TERJUAL" && qty > 0 && (
                 <div
                   className="rounded-xl px-4 py-3 text-sm"
-                  style={{ background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.2)" }}
+                  style={{ background: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.2)" }}
                 >
                   <p className="text-xs" style={{ color: "var(--t-text-muted)" }}>Estimasi Pendapatan</p>
-                  <p className="font-bold text-emerald-500 text-base">
+                  <p className="font-bold text-indigo-400 text-base">
                     {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(
                       qty * selectedProduct.pricePerKg
                     )}
@@ -405,7 +405,7 @@ export function StokPOS({ products }: { products: Product[] }) {
                 className="w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-60"
                 style={
                   success
-                    ? { background: "rgba(16,185,129,0.15)", color: "#10b981", border: "1px solid rgba(16,185,129,0.3)" }
+                    ? { background: "rgba(99,102,241,0.15)", color: "#6366f1", border: "1px solid rgba(99,102,241,0.3)" }
                     : { background: selectedActionDef.bg, color: selectedActionDef.color, border: `1px solid ${selectedActionDef.border}` }
                 }
               >

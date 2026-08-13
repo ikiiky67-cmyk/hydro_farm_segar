@@ -58,7 +58,7 @@ const inputStyle = {
 } as React.CSSProperties;
 
 const inputClass =
-  "w-full border rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all";
+  "w-full border rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all";
 
 export function TransactionForm({ onClose }: { onClose: () => void }) {
   const router = useRouter();

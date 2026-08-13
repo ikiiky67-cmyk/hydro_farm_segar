@@ -15,7 +15,7 @@ const typeConfig: Record<string, {
   badge: string;
   icon: React.ElementType;
 }> = {
-  PENJUALAN:   { label: "Penjualan",       badge: "bg-emerald-500/15 text-emerald-500", icon: ShoppingCart },
+  PENJUALAN:   { label: "Penjualan",       badge: "bg-indigo-500/15 text-indigo-400", icon: ShoppingCart },
   PEMASUKAN:   { label: "Pemasukan Lain",  badge: "bg-sky-500/15 text-sky-400",         icon: DollarSign },
   PENGELUARAN: { label: "Pengeluaran",     badge: "bg-rose-500/15 text-rose-400",       icon: TrendingDown },
 };
@@ -41,8 +41,8 @@ export default async function TransaksiPage() {
     {
       label: "Pendapatan Penjualan",
       value: totalPenjualan,
-      color: "#10b981",
-      border: "rgba(16,185,129,0.25)",
+      color: "#6366f1",
+      border: "rgba(99,102,241,0.25)",
       icon: ShoppingCart,
       note: "Otomatis dari stok"
     },
@@ -65,8 +65,8 @@ export default async function TransaksiPage() {
     {
       label: "Saldo Bersih",
       value: balance,
-      color: balance >= 0 ? "#10b981" : "#f43f5e",
-      border: balance >= 0 ? "rgba(16,185,129,0.25)" : "rgba(244,63,94,0.25)",
+      color: balance >= 0 ? "#6366f1" : "#f43f5e",
+      border: balance >= 0 ? "rgba(99,102,241,0.25)" : "rgba(244,63,94,0.25)",
       icon: Wallet,
       note: "Pemasukan − Pengeluaran"
     },
@@ -87,12 +87,12 @@ export default async function TransaksiPage() {
           <div
             className="hidden sm:flex items-center gap-2 text-xs px-3 py-2 rounded-xl border"
             style={{
-              background: "rgba(16,185,129,0.05)",
-              borderColor: "rgba(16,185,129,0.2)",
+              background: "rgba(99,102,241,0.05)",
+              borderColor: "rgba(99,102,241,0.2)",
               color: "var(--t-text-muted)",
             }}
           >
-            <Info className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+            <Info className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
             Penjualan otomatis tercatat via menu Stok
           </div>
           <TransactionModal />
@@ -215,7 +215,7 @@ export default async function TransaksiPage() {
                       </td>
                       <td
                         className="px-5 py-4 text-right font-bold whitespace-nowrap"
-                        style={{ color: isExpense ? "#f43f5e" : "#10b981" }}
+                        style={{ color: isExpense ? "#f43f5e" : "#6366f1" }}
                       >
                         {isExpense ? "−" : "+"}
                         {formatRupiah(parseFloat(tx.totalAmount.toString()))}

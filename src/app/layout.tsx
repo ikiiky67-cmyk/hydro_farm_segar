@@ -21,6 +21,13 @@ export const metadata: Metadata = {
   description:
     "Dapatkan sayuran hidroponik segar berkualitas tinggi, bebas pestisida, langsung dari kebun kami. Pesan sekarang melalui WhatsApp.",
   keywords: ["hidroponik", "sayuran segar", "organik", "pertanian hidroponik", "sayuran bebas pestisida"],
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: "/apple-icon.png",
+  },
   openGraph: {
     type: "website",
     locale: "id_ID",

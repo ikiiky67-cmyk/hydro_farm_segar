@@ -18,9 +18,9 @@ const TYPE_CONFIG = {
   PANEN_MASUK: {
     label: "Panen Masuk",
     icon: TrendingUp,
-    badge: "bg-emerald-500/15 text-emerald-500",
+    badge: "bg-indigo-500/15 text-indigo-400",
     valueSign: "+",
-    valueColor: "#10b981",
+    valueColor: "#6366f1",
     desc: "Restok",
   },
   TERJUAL: {
@@ -118,7 +118,7 @@ export default async function RiwayatStokPage({
           </Link>
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: "var(--t-text-primary)" }}>
-              <History className="w-6 h-6 text-emerald-500" />
+              <History className="w-6 h-6 text-indigo-400" />
               Riwayat Pergerakan Stok
             </h1>
             <p className="text-sm mt-0.5" style={{ color: "var(--t-text-muted)" }}>
@@ -132,13 +132,13 @@ export default async function RiwayatStokPage({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div
           className="rounded-2xl border p-4 flex items-center gap-3"
-          style={{ background: "var(--t-card-bg)", borderColor: "rgba(16,185,129,0.25)" }}
+          style={{ background: "var(--t-card-bg)", borderColor: "rgba(99,102,241,0.25)" }}
         >
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
-            <DollarSign className="w-5 h-5 text-emerald-500" />
+          <div className="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center flex-shrink-0">
+            <DollarSign className="w-5 h-5 text-indigo-400" />
           </div>
           <div>
-            <p className="text-lg font-bold text-emerald-500">{formatRupiah(totalPenjualan)}</p>
+            <p className="text-lg font-bold text-indigo-400">{formatRupiah(totalPenjualan)}</p>
             <p className="text-xs" style={{ color: "var(--t-text-muted)" }}>Nilai Penjualan (halaman ini)</p>
           </div>
         </div>
@@ -194,7 +194,7 @@ export default async function RiwayatStokPage({
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all"
                 style={
                   isActive
-                    ? { background: "rgba(16,185,129,0.15)", borderColor: "rgba(16,185,129,0.4)", color: "#10b981" }
+                    ? { background: "rgba(99,102,241,0.15)", borderColor: "rgba(99,102,241,0.4)", color: "#6366f1" }
                     : { background: "var(--t-input-bg)", borderColor: "var(--t-input-border)", color: "var(--t-text-muted)" }
                 }
               >
@@ -302,7 +302,7 @@ export default async function RiwayatStokPage({
                           style={{
                             color:
                               m.type === "TERJUAL"
-                                ? "#10b981"
+                                ? "#6366f1"
                                 : m.type === "RUSAK"
                                 ? "#f43f5e"
                                 : m.type === "PANEN_MASUK"
@@ -399,7 +399,7 @@ export default async function RiwayatStokPage({
                     className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold border transition-colors"
                     style={
                       isActive
-                        ? { background: "#10b981", borderColor: "#10b981", color: "#fff" }
+                        ? { background: "#6366f1", borderColor: "#6366f1", color: "#fff" }
                         : { background: "var(--t-input-bg)", borderColor: "var(--t-input-border)", color: "var(--t-text-secondary)" }
                     }
                   >

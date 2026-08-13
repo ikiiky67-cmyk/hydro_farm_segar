@@ -14,7 +14,7 @@ const inputStyle = {
   color: "var(--t-text-primary)",
 } as React.CSSProperties;
 
-const inputClass = "w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all";
+const inputClass = "w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all";
 
 export function ProfilForm({ profile }: { profile: BusinessProfile | null }) {
   const router = useRouter();
@@ -75,7 +75,7 @@ export function ProfilForm({ profile }: { profile: BusinessProfile | null }) {
       </div>
 
       <div className="flex items-center gap-3 pt-2">
-        <Button type="submit" disabled={pending} className="bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl font-semibold gap-2 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+        <Button type="submit" disabled={pending} className="bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl font-semibold gap-2 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
           {pending ? "Menyimpan..." : saved ? (
             <><CheckCircle className="w-4 h-4" /> Tersimpan!</>
           ) : (

@@ -8,7 +8,7 @@ import { Plus, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const MOVEMENT_TYPES = [
-  { value: "PANEN_MASUK",  label: "Panen Masuk",     color: "#10b981", bg: "rgba(16,185,129,0.15)", border: "rgba(16,185,129,0.4)" },
+  { value: "PANEN_MASUK",  label: "Panen Masuk",     color: "#6366f1", bg: "rgba(99,102,241,0.15)", border: "rgba(99,102,241,0.4)" },
   { value: "TERJUAL",      label: "Terjual",          color: "#38bdf8", bg: "rgba(56,189,248,0.15)",  border: "rgba(56,189,248,0.4)" },
   { value: "RUSAK",        label: "Rusak/Terbuang",   color: "#f43f5e", bg: "rgba(244,63,94,0.15)",   border: "rgba(244,63,94,0.4)" },
   { value: "PENYESUAIAN",  label: "Penyesuaian",      color: "#f59e0b", bg: "rgba(245,158,11,0.15)",  border: "rgba(245,158,11,0.4)" },
@@ -42,7 +42,7 @@ export function StockMovementModal({ products }: { products: { id: string; name:
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white font-semibold px-4 py-2.5 rounded-xl text-sm transition-all duration-200 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
+        className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold px-4 py-2.5 rounded-xl text-sm transition-all duration-200 shadow-[0_0_20px_rgba(99,102,241,0.25)]"
       >
         <Plus className="w-4 h-4" />
         Tambah Pergerakan
@@ -132,7 +132,7 @@ export function StockMovementModal({ products }: { products: { id: string; name:
                   <Button type="button" variant="ghost" onClick={() => setOpen(false)} className="flex-1 rounded-xl" style={{ border: "1px solid var(--t-input-border)", color: "var(--t-text-secondary)" }}>
                     Batal
                   </Button>
-                  <Button type="submit" disabled={pending} className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl font-semibold">
+                  <Button type="submit" disabled={pending} className="flex-1 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl font-semibold">
                     {pending ? "Menyimpan..." : "Simpan"}
                   </Button>
                 </div>

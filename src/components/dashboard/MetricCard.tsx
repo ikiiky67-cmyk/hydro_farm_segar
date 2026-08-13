@@ -11,11 +11,12 @@ interface MetricCardProps {
   icon: React.ReactNode;
   trend?: "up" | "down" | "neutral";
   trendValue?: string;
-  colorVariant?: "green" | "blue" | "amber" | "rose";
+  colorVariant?: "indigo" | "green" | "blue" | "amber" | "rose";
   delay?: number;
 }
 
 const colorMap = {
+  indigo: { border: "border-indigo-500/25", icon: "bg-indigo-500/15 text-indigo-400 border border-indigo-500/25" },
   green: { border: "border-emerald-500/25", icon: "bg-emerald-500/15 text-emerald-500 border border-emerald-500/25" },
   blue:  { border: "border-sky-500/25",     icon: "bg-sky-500/15 text-sky-400 border border-sky-500/25" },
   amber: { border: "border-amber-500/25",   icon: "bg-amber-500/15 text-amber-400 border border-amber-500/25" },
@@ -31,7 +32,7 @@ const TrendIcon = ({ trend }: { trend: "up" | "down" | "neutral" }) => {
 export function MetricCard({
   title, value, subtitle, icon,
   trend = "neutral", trendValue,
-  colorVariant = "green", delay = 0,
+  colorVariant = "indigo", delay = 0,
 }: MetricCardProps) {
   const colors = colorMap[colorVariant];
 

@@ -17,8 +17,8 @@ export default function TambahProdukPage() {
         style={{ background: "var(--t-card-bg)", borderColor: "var(--t-card-border)" }}
       >
         <div className="flex items-center gap-3 mb-6 pb-5" style={{ borderBottom: "1px solid var(--t-divider)" }}>
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center">
-            <Package className="w-5 h-5 text-emerald-500" />
+          <div className="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center">
+            <Package className="w-5 h-5 text-indigo-400" />
           </div>
           <div>
             <p className="font-semibold" style={{ color: "var(--t-text-primary)" }}>Informasi Produk</p>

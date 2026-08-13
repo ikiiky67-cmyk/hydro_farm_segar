@@ -14,11 +14,11 @@ export function SalesChart({ data }: SalesChartProps) {
   const { theme } = useTheme();
   const isLight = theme === "light";
 
-  const gridColor   = isLight ? "#c8e0c8" : "#27272a";
-  const tickColor   = isLight ? "#6b9a6b" : "#71717a";
-  const tooltipBg   = isLight ? "#ffffff" : "#18181b";
-  const tooltipBorder = isLight ? "#c8e0c8" : "#3f3f46";
-  const tooltipText = isLight ? "#1a2e1a" : "#a1a1aa";
+  const gridColor   = isLight ? "#d5d5f0" : "#1e1b4b";
+  const tickColor   = isLight ? "#6366a0" : "#6e6e8a";
+  const tooltipBg   = isLight ? "#ffffff" : "#0f0e1e";
+  const tooltipBorder = isLight ? "#d5d5f0" : "#2e2b50";
+  const tooltipText = isLight ? "#1e1b4b" : "#a5a5c0";
 
   return (
     <motion.div
@@ -36,8 +36,8 @@ export function SalesChart({ data }: SalesChartProps) {
         <AreaChart data={data} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
           <defs>
             <linearGradient id="pendapatanGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%"  stopColor="#10b981" stopOpacity={isLight ? 0.25 : 0.3} />
-              <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+              <stop offset="5%"  stopColor="#6366f1" stopOpacity={isLight ? 0.25 : 0.3} />
+              <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
@@ -65,11 +65,11 @@ export function SalesChart({ data }: SalesChartProps) {
           <Area
             type="monotone"
             dataKey="pendapatan"
-            stroke="#10b981"
+            stroke="#6366f1"
             strokeWidth={2}
             fill="url(#pendapatanGradient)"
             dot={false}
-            activeDot={{ r: 4, fill: "#10b981", strokeWidth: 0 }}
+            activeDot={{ r: 4, fill: "#6366f1", strokeWidth: 0 }}
           />
         </AreaChart>
       </ResponsiveContainer>

@@ -15,7 +15,7 @@ export function ThemeToggle({ variant = "default" }: { variant?: "default" | "na
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       title={isDark ? "Aktifkan Light Mode" : "Aktifkan Dark Mode"}
-      className="relative flex items-center gap-1.5 rounded-xl border transition-all duration-300 outline-none focus:ring-2 focus:ring-emerald-500/30"
+      className="relative flex items-center gap-1.5 rounded-xl border transition-all duration-300 outline-none focus:ring-2 focus:ring-indigo-500/30"
       style={{
         padding: variant === "navbar" ? "0.4rem" : "0.4rem 0.75rem",
         background: "var(--t-input-bg)",

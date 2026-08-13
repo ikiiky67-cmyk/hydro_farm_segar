@@ -64,7 +64,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
           }}
         >
           <Bell className="w-4 h-4" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 border-2" style={{ borderColor: "var(--t-header-bg)" }} />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-500 border-2" style={{ borderColor: "var(--t-header-bg)" }} />
         </button>
 
         {/* User Dropdown */}
@@ -78,7 +78,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
               }}
             >
               <Avatar className="w-7 h-7">
-                <AvatarFallback className="bg-emerald-500/20 text-emerald-500 text-xs font-bold">
+                <AvatarFallback className="bg-indigo-500/20 text-indigo-400 text-xs font-bold">
                   {initials}
                 </AvatarFallback>
               </Avatar>

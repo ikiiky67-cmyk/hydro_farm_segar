@@ -28,7 +28,7 @@ export default async function ProdukPage() {
             Kelola katalog sayuran hidroponik Anda
           </p>
         </div>
-        <Button asChild className="bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl gap-2 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+        <Button asChild className="bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl gap-2 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
           <Link href="/dashboard/produk/tambah">
             <Plus className="w-4 h-4" />
             Tambah Produk
@@ -118,7 +118,7 @@ export default async function ProdukPage() {
 
                     {/* ── Harga ── */}
                     <td className="px-4 py-3 text-right">
-                      <p className="font-semibold text-emerald-500">
+                      <p className="font-semibold text-indigo-400">
                         {formatRupiah(parseFloat(product.pricePerKg.toString()))}
                       </p>
                       <p className="text-xs mt-0.5" style={{ color: "var(--t-text-muted)" }}>/{product.unit}</p>
@@ -150,7 +150,7 @@ export default async function ProdukPage() {
                         <Badge
                           className={`border-0 text-xs ${
                             product.isActive
-                              ? "bg-emerald-500/15 text-emerald-500"
+                              ? "bg-indigo-500/15 text-indigo-400"
                               : "bg-zinc-500/15 text-zinc-500"
                           }`}
                         >
