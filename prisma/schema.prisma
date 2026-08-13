@@ -1,0 +1,174 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ──────────────────────────────────────────
+// AUTH
+// ──────────────────────────────────────────
+model Admin {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+// ──────────────────────────────────────────
+// PRODUK
+// ──────────────────────────────────────────
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  imageUrl    String?
+  pricePerKg  Decimal  @db.Decimal(12, 2)
+  unit        String   @default("kg")
+  category    String?
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  stockMovements   StockMovement[]
+  transactionItems TransactionItem[]
+  productViews     ProductView[]
+
+  @@map("products")
+}
+
+// ──────────────────────────────────────────
+// STOK
+// ──────────────────────────────────────────
+enum MovementType {
+  PANEN_MASUK
+  TERJUAL
+  RUSAK
+  PENYESUAIAN
+}
+
+model StockMovement {
+  id         String       @id @default(cuid())
+  productId  String
+  type       MovementType
+  quantity   Decimal      @db.Decimal(10, 3)
+  note       String?
+  recordedAt DateTime     @default(now())
+  createdAt  DateTime     @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([productId])
+  @@index([recordedAt])
+  @@map("stock_movements")
+}
+
+// ──────────────────────────────────────────
+// TRANSAKSI KEUANGAN
+// ──────────────────────────────────────────
+enum TransactionType {
+  PENJUALAN
+  PEMASUKAN
+  PENGELUARAN
+}
+
+model Transaction {
+  id          String          @id @default(cuid())
+  type        TransactionType
+  totalAmount Decimal         @db.Decimal(12, 2)
+  note        String?
+  buyerName   String?
+  channel     String?
+  occurredAt  DateTime        @default(now())
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  items TransactionItem[]
+
+  @@index([occurredAt])
+  @@index([type])
+  @@map("transactions")
+}
+
+model TransactionItem {
+  id            String  @id @default(cuid())
+  transactionId String
+  productId     String
+  quantity      Decimal @db.Decimal(10, 3)
+  pricePerUnit  Decimal @db.Decimal(12, 2)
+  subtotal      Decimal @db.Decimal(12, 2)
+
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  product     Product     @relation(fields: [productId], references: [id])
+
+  @@map("transaction_items")
+}
+
+// ──────────────────────────────────────────
+// CMS LANDING PAGE
+// ──────────────────────────────────────────
+model BusinessProfile {
+  id          String   @id @default(cuid())
+  farmName    String
+  tagline     String?
+  description String?
+  logoUrl     String?
+  bannerUrl   String?
+  phone       String?
+  email       String?
+  address     String?
+  instagram   String?
+  whatsapp    String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("business_profile")
+}
+
+enum PromoStatus {
+  AKTIF
+  NONAKTIF
+  JADWAL
+}
+
+model PromoContent {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  imageUrl    String?
+  badgeText   String?
+  status      PromoStatus @default(AKTIF)
+  startDate   DateTime?
+  endDate     DateTime?
+  sortOrder   Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("promo_contents")
+}
+
+// ──────────────────────────────────────────
+// ANALITIK: LOG PENGUNJUNG PRODUK
+// ──────────────────────────────────────────
+model ProductView {
+  id        String   @id @default(cuid())
+  productId String
+  ipHash    String?
+  userAgent String?
+  source    String?
+  viewedAt  DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([productId])
+  @@index([viewedAt])
+  @@map("product_views")
+}
