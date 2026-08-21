@@ -2,7 +2,7 @@
 
 import { useTransition, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createTransaction } from "@/actions/transaction.actions";
+import { createTransaction, updateTransaction } from "@/actions/transaction.actions";
 import { Button } from "@/components/ui/button";
 import {
   Wallet, TrendingDown, Plus as PlusIcon,
@@ -60,12 +60,17 @@ const inputStyle = {
 const inputClass =
   "w-full border rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all";
 
-export function TransactionForm({ onClose }: { onClose: () => void }) {
+export function TransactionForm({ onClose, initialData }: { onClose: () => void; initialData?: any }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [type, setType] = useState("PENGELUARAN");
-  const [category, setCategory] = useState<string>("");
+  
+  // Jika initialData adalah Modal, kita perlu mapping balik tipe karena di DB disimpan sbg PEMASUKAN + note [MODAL]
+  const isInitialModal = initialData?.type === "PEMASUKAN" && initialData?.note?.includes("[MODAL]");
+  const initialType = isInitialModal ? "MODAL" : (initialData?.type || "PENGELUARAN");
+
+  const [type, setType] = useState(initialType);
+  const [category, setCategory] = useState<string>(initialData?.channel || "");
 
   const selectedType = TYPES.find((t) => t.value === type)!;
 
@@ -73,15 +78,24 @@ export function TransactionForm({ onClose }: { onClose: () => void }) {
     e.preventDefault();
     setError(null);
     const formData = new FormData(e.currentTarget);
+    
     // Untuk MODAL, simpan sebagai PEMASUKAN dengan note bertanda [MODAL]
     if (type === "MODAL") {
       formData.set("type", "PEMASUKAN");
       const existingNote = formData.get("note") as string;
-      formData.set("note", `[MODAL] ${existingNote || "Suntikan modal"}`);
+      if (!existingNote.includes("[MODAL]")) {
+        formData.set("note", `[MODAL] ${existingNote || "Suntikan modal"}`);
+      }
     }
 
     startTransition(async () => {
-      const result = await createTransaction(formData);
+      let result;
+      if (initialData?.id) {
+        result = await updateTransaction(initialData.id, formData);
+      } else {
+        result = await createTransaction(formData);
+      }
+      
       if (result?.error) {
         setError("Periksa kembali isian form Anda.");
       } else {
@@ -166,6 +180,7 @@ export function TransactionForm({ onClose }: { onClose: () => void }) {
           min="0"
           step="100"
           required
+          defaultValue={initialData?.totalAmount}
           placeholder="Contoh: 150000"
           className={inputClass}
           style={inputStyle}
@@ -180,6 +195,7 @@ export function TransactionForm({ onClose }: { onClose: () => void }) {
         <input
           name="note"
           type="text"
+          defaultValue={initialData?.note?.replace("[MODAL] ", "")}
           placeholder={
             type === "PENGELUARAN"
               ? "Beli pupuk nutrisi AB..."
@@ -200,7 +216,7 @@ export function TransactionForm({ onClose }: { onClose: () => void }) {
         <input
           name="occurredAt"
           type="date"
-          defaultValue={new Date().toISOString().split("T")[0]}
+          defaultValue={initialData?.occurredAt ? new Date(initialData.occurredAt).toISOString().split("T")[0] : new Date().toISOString().split("T")[0]}
           className={inputClass}
           style={inputStyle}
         />

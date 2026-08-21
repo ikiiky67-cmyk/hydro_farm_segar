@@ -17,6 +17,7 @@ type SerializedProduct = {
   imageUrl: string | null;
   pricePerKg: number;
   unit: string;
+  minStock: number;
   category: string | null;
   isActive: boolean;
   isFeatured: boolean;
@@ -84,7 +85,19 @@ export function ProductForm({ product }: { product?: SerializedProduct | null })
         : await createProduct(formData);
 
       if (result?.error) {
-        setError("Periksa kembali isian form Anda.");
+        // Extract specific error messages if they exist (e.g., duplicate name)
+        if (typeof result.error === 'object' && result.error !== null) {
+          const fieldErrors = result.error as Record<string, string[]>;
+          if (fieldErrors.name?.[0]) {
+            setError(fieldErrors.name[0]);
+          } else if (fieldErrors.slug?.[0]) {
+            setError(fieldErrors.slug[0]);
+          } else {
+            setError("Periksa kembali isian form Anda.");
+          }
+        } else {
+          setError(String((result as any).error) || "Terjadi kesalahan yang tidak diketahui.");
+        }
       } else {
         router.push("/dashboard/produk");
         router.refresh();
@@ -161,8 +174,8 @@ export function ProductForm({ product }: { product?: SerializedProduct | null })
         />
       </div>
 
-      {/* ── Harga, Satuan, Kategori ── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      {/* ── Harga, Satuan, Stok Min, Kategori ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <div>
           <label className={labelClass} style={{ color: "var(--t-text-muted)" }}>
             Harga per Satuan (Rp) *
@@ -195,6 +208,22 @@ export function ProductForm({ product }: { product?: SerializedProduct | null })
             <option value="pcs">pcs</option>
             <option value="pack">pack</option>
           </select>
+        </div>
+        <div>
+          <label className={labelClass} style={{ color: "var(--t-text-muted)" }}>
+            Batas Stok Minimum *
+          </label>
+          <input
+            name="minStock"
+            type="number"
+            required
+            min="0"
+            step="0.01"
+            defaultValue={product?.minStock?.toString() ?? "5"}
+            placeholder="5"
+            className={inputClass}
+            style={inputStyle}
+          />
         </div>
         <div>
           <label className={labelClass} style={{ color: "var(--t-text-muted)" }}>

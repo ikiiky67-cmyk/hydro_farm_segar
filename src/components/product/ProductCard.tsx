@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Leaf, ExternalLink, ShoppingBag } from "lucide-react";
 import { formatRupiah } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -13,6 +14,7 @@ export interface SerializedProduct {
   imageUrl: string | null;
   pricePerKg: number;
   unit: string;
+  minStock: number;
   category: string | null;
   isActive: boolean;
   isFeatured: boolean;
@@ -23,9 +25,13 @@ export interface SerializedProduct {
 interface ProductCardProps {
   product: SerializedProduct;
   index?: number;
+  disableAnimation?: boolean;
+  farmName?: string;
+  whatsapp?: string | null;
+  from?: string;
 }
 
-export function ProductCard({ product, index = 0 }: ProductCardProps) {
+export function ProductCard({ product, index = 0, disableAnimation = false, farmName, whatsapp, from }: ProductCardProps) {
   const handleClick = async () => {
     try {
       await fetch("/api/views", {
@@ -36,34 +42,64 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
     } catch {}
   };
 
+  const CardWrapper = disableAnimation ? "div" : motion.div;
+  const animationProps = disableAnimation ? {} : {
+    initial: { opacity: 0, y: 30, scale: 0.96 },
+    whileInView: { opacity: 1, y: 0, scale: 1 },
+    viewport: { once: true, margin: "-100px" },
+    transition: { 
+      duration: 1,
+      ease: [0.16, 1, 0.3, 1] as const,
+      delay: index * 0.1 
+    }
+  };
+
+  const handleCartClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (whatsapp) {
+      const waMessage = encodeURIComponent(`Halo ${farmName || 'Admin'}, saya tertarik dengan produk:\n\nProduk: ${product.name}\nHarga: ${formatRupiah(product.pricePerKg)}/${product.unit}\n\nApakah stoknya masih tersedia?`);
+      const waLink = `https://wa.me/${whatsapp.replace(/\D/g, "")}?text=${waMessage}`;
+      window.open(waLink, "_blank", "noopener,noreferrer");
+    } else {
+      // Jika tidak ada nomor WA, arahkan ke halaman detail saja
+      window.location.href = `/produk/${product.slug}${from ? `?from=${from}` : ""}`;
+    }
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: index * 0.08 }}
+    <CardWrapper
+      {...animationProps}
       className="h-full"
     >
       <Link
-        href={`/produk/${product.slug}`}
+        href={`/produk/${product.slug}${from ? `?from=${from}` : ""}`}
         onClick={handleClick}
-        className="group flex flex-col h-full rounded-2xl overflow-hidden border pub-card-glow transition-all duration-300"
+        className="group flex flex-col h-full rounded-[2rem] overflow-hidden relative transition-all duration-500 hover:-translate-y-2"
         style={{
-          background: "var(--pub-card-bg)",
-          borderColor: "var(--pub-card-border)",
+          background: "var(--pub-card-bg, rgba(255,255,255,0.03))",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          border: "1px solid var(--pub-card-border, rgba(255,255,255,0.08))",
+          boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.1)",
         }}
       >
+        {/* Shimmer effect on hover */}
+        <div className="absolute inset-0 -translate-x-[150%] skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-[150%] transition-transform duration-[1500ms] ease-in-out z-20 pointer-events-none" />
+        
+        {/* Glow backdrop on hover */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
         {/* Image */}
-        <div
-          className="relative h-52 overflow-hidden"
-          style={{ background: "var(--pub-section-alt)" }}
-        >
+        <div className="relative h-48 overflow-hidden rounded-t-[1.5rem] rounded-b-xl mx-2 mt-2 bg-black/5">
           {product.imageUrl ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
+            <Image
               src={product.imageUrl}
               alt={product.name}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-108"
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
             />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center gap-2">
@@ -72,42 +108,35 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           )}
 
           {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-
-          {/* Featured badge */}
-          {product.isFeatured && (
-            <div className="absolute top-3 left-3 bg-emerald-500 text-white text-xs font-bold px-2.5 py-1 rounded-lg shadow-lg backdrop-blur-sm">
-              ★ Unggulan
-            </div>
-          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
           {/* Category */}
           {product.category && (
-            <div
-              className="absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-lg border backdrop-blur-md"
-              style={{
-                background: "rgba(0,0,0,0.35)",
-                borderColor: "rgba(255,255,255,0.15)",
-                color: "rgba(255,255,255,0.9)",
-              }}
-            >
+            <div className="absolute top-4 right-4 text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white">
               {product.category}
             </div>
           )}
 
           {/* Quick view button — appears on hover */}
-          <div className="absolute inset-x-0 bottom-0 flex items-center justify-center pb-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-            <span className="inline-flex items-center gap-1.5 bg-white/90 dark:bg-black/60 backdrop-blur-sm text-emerald-700 dark:text-emerald-300 text-xs font-bold px-4 py-2 rounded-full shadow-lg">
-              <ExternalLink className="w-3.5 h-3.5" />
+          <div className="absolute inset-x-0 bottom-0 flex items-center justify-center pb-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+            <span className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-xl border border-white/30 text-white text-xs font-bold px-5 py-2.5 rounded-full shadow-[0_0_20px_rgba(0,0,0,0.2)]">
+              <ExternalLink className="w-4 h-4" />
               Lihat Detail
             </span>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-5 flex flex-col flex-grow">
+        <div className="p-4 md:p-5 flex flex-col flex-grow relative z-10">
+          {product.isFeatured && (
+            <div className="mb-2">
+              <span className="inline-block bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-[9px] uppercase tracking-wider font-bold px-2.5 py-1 rounded shadow-sm">
+                Unggulan
+              </span>
+            </div>
+          )}
           <h3
-            className="font-bold text-[17px] leading-snug mb-2 transition-colors duration-200 group-hover:text-emerald-500"
+            className="font-bold text-lg md:text-xl tracking-tight leading-snug mb-2 transition-colors duration-300 group-hover:text-emerald-500 line-clamp-2"
             style={{ color: "var(--pub-text)" }}
           >
             {product.name}
@@ -115,7 +144,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
 
           {product.description && (
             <p
-              className="text-sm leading-relaxed line-clamp-2 flex-grow mb-4"
+              className="text-sm md:text-base leading-relaxed line-clamp-2 flex-grow mb-4 font-light"
               style={{ color: "var(--pub-text-muted)" }}
             >
               {product.description}
@@ -123,30 +152,33 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           )}
 
           <div
-            className="flex items-center justify-between pt-4 border-t"
+            className="flex items-center justify-between pt-4 mt-auto border-t gap-2"
             style={{ borderColor: "var(--pub-divider)" }}
           >
-            <div>
-              <span className="text-xl font-extrabold text-emerald-500">
+            <div className="flex-1 min-w-0">
+              <span className="text-lg md:text-xl font-extrabold text-emerald-500 tracking-tight drop-shadow-[0_0_10px_rgba(16,185,129,0.3)] block truncate">
                 {formatRupiah(product.pricePerKg)}
               </span>
               <span
-                className="text-xs ml-1 font-medium"
+                className="text-[10px] md:text-xs font-medium opacity-60 block truncate"
                 style={{ color: "var(--pub-text-muted)" }}
               >
-                /{product.unit}
+                per {product.unit}
               </span>
             </div>
 
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              className="w-9 h-9 rounded-xl bg-emerald-500/10 group-hover:bg-emerald-500 flex items-center justify-center transition-all duration-300"
+            <motion.button
+              onClick={handleCartClick}
+              whileHover={{ scale: 1.15 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 border border-emerald-500/30 hover:from-emerald-500 hover:to-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] flex items-center justify-center transition-all duration-300 flex-shrink-0 group/btn"
+              aria-label="Beli via WhatsApp"
             >
-              <ShoppingBag className="w-4 h-4 text-emerald-500 group-hover:text-white transition-colors duration-300" />
-            </motion.div>
+              <ShoppingBag className="w-4 h-4 md:w-4 md:h-4 text-emerald-500 group-hover/btn:text-white transition-colors duration-300 drop-shadow-sm" />
+            </motion.button>
           </div>
         </div>
       </Link>
-    </motion.div>
+    </CardWrapper>
   );
 }

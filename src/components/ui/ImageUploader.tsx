@@ -8,12 +8,14 @@ interface ImageUploaderProps {
   name?: string;               // hidden input name — default "imageUrl"
   defaultValue?: string | null; // URL foto yang sudah ada (edit mode)
   onUploadSuccess?: (url: string) => void;
+  folder?: string;             // folder untuk menyimpan gambar
 }
 
 export function ImageUploader({
   name = "imageUrl",
   defaultValue,
   onUploadSuccess,
+  folder = "products",
 }: ImageUploaderProps) {
   const [preview, setPreview] = useState<string | null>(defaultValue ?? null);
   const [uploading, setUploading] = useState(false);
@@ -33,6 +35,7 @@ export function ImageUploader({
 
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("folder", folder);
 
     try {
       const res = await fetch("/api/upload", { method: "POST", body: formData });

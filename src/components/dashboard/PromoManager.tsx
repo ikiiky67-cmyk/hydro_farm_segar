@@ -8,6 +8,7 @@ import type { PromoContent } from "@prisma/client";
 import { useState } from "react";
 import { Plus, Trash2, ToggleLeft, ToggleRight, X, Tag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ImageUploader } from "@/components/ui/ImageUploader";
 
 const inputStyle = {
   background: "var(--t-input-bg)",
@@ -37,9 +38,15 @@ function PromoCard({ promo }: { promo: PromoContent }) {
           {promo.badgeText}
         </span>
       )}
-      <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center mb-3">
-        <Tag className="w-4 h-4 text-indigo-400" />
-      </div>
+      {promo.imageUrl ? (
+        <div className="w-full h-32 mb-4 rounded-xl overflow-hidden bg-black/5 mt-2">
+          <img src={promo.imageUrl} alt={promo.title} className="w-full h-full object-cover" />
+        </div>
+      ) : (
+        <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center mb-3 mt-2">
+          <Tag className="w-4 h-4 text-indigo-400" />
+        </div>
+      )}
       <h3 className="font-bold mb-1 pr-20" style={{ color: "var(--t-text-primary)" }}>
         {promo.title}
       </h3>
@@ -131,18 +138,40 @@ function AddPromoForm({ onClose }: { onClose: () => void }) {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="text-xs font-semibold uppercase tracking-wide mb-2 block" style={{ color: "var(--t-text-muted)" }}>
-            Badge Teks
+            Gambar Promo
           </label>
-          <input name="badgeText" placeholder="DISKON 20%" className={inputClass} style={inputStyle} />
+          <ImageUploader name="imageUrl" folder="cms/promo" />
+        </div>
+        <div className="space-y-4">
+          <div>
+            <label className="text-xs font-semibold uppercase tracking-wide mb-2 block" style={{ color: "var(--t-text-muted)" }}>
+              Badge Teks
+            </label>
+            <input name="badgeText" placeholder="DISKON 20%" className={inputClass} style={inputStyle} />
+          </div>
+          <div>
+            <label className="text-xs font-semibold uppercase tracking-wide mb-2 block" style={{ color: "var(--t-text-muted)" }}>
+              Status
+            </label>
+            <select name="status" className={`${inputClass} cursor-pointer`} style={inputStyle}>
+              <option value="AKTIF">Aktif</option>
+              <option value="NONAKTIF">Nonaktif</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs font-semibold uppercase tracking-wide mb-2 block" style={{ color: "var(--t-text-muted)" }}>
+            Tanggal Mulai
+          </label>
+          <input type="date" name="startDate" className={inputClass} style={inputStyle} />
         </div>
         <div>
           <label className="text-xs font-semibold uppercase tracking-wide mb-2 block" style={{ color: "var(--t-text-muted)" }}>
-            Status
+            Tanggal Berakhir
           </label>
-          <select name="status" className={`${inputClass} cursor-pointer`} style={inputStyle}>
-            <option value="AKTIF">Aktif</option>
-            <option value="NONAKTIF">Nonaktif</option>
-          </select>
+          <input type="date" name="endDate" className={inputClass} style={inputStyle} />
         </div>
       </div>
       <div className="flex gap-3 pt-2">

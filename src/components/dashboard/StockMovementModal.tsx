@@ -33,7 +33,18 @@ export function StockMovementModal({ products }: { products: { id: string; name:
     const formData = new FormData(e.currentTarget);
     startTransition(async () => {
       const result = await createStockMovement(formData);
-      if (result?.error) setError("Periksa isian form.");
+      if (result?.error) {
+        if (typeof result.error === 'object' && result.error !== null) {
+          const fieldErrors = result.error as Record<string, string[]>;
+          if (fieldErrors.quantity?.[0]) {
+            setError(fieldErrors.quantity[0]);
+          } else {
+            setError("Error spesifik tidak terbaca: " + JSON.stringify(result.error));
+          }
+        } else {
+          setError(String((result as any).error) || "Terjadi kesalahan.");
+        }
+      }
       else { router.refresh(); setOpen(false); setType("PANEN_MASUK"); }
     });
   }

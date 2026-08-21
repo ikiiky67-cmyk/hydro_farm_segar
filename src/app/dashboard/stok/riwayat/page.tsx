@@ -8,9 +8,10 @@ import { formatRupiah, formatNumber } from "@/lib/utils";
 import { RiwayatFilterBar } from "@/components/dashboard/RiwayatFilterBar";
 import {
   ArrowLeft, TrendingUp, TrendingDown, RotateCcw, Trash2,
-  Package, ChevronLeft, ChevronRight, History,
+  Package, History,
   Filter, DollarSign, Boxes,
 } from "lucide-react";
+import { RiwayatTableClient } from "@/components/dashboard/RiwayatTableClient";
 
 export const metadata: Metadata = { title: "Riwayat Pergerakan Stok" };
 
@@ -57,7 +58,7 @@ const TYPE_FILTERS = [
   { value: "PENYESUAIAN", label: "Penyesuaian" },
 ];
 
-const PER_PAGE = 20;
+const PER_PAGE = 1000;
 
 export default async function RiwayatStokPage({
   searchParams,
@@ -206,229 +207,7 @@ export default async function RiwayatStokPage({
       </div>
 
       {/* ── Tabel Riwayat ── */}
-      <div
-        className="rounded-2xl border overflow-hidden"
-        style={{ background: "var(--t-card-bg)", borderColor: "var(--t-card-border)" }}
-      >
-        {data.movements.length === 0 ? (
-          <div className="flex flex-col items-center py-20" style={{ color: "var(--t-text-muted)" }}>
-            <History className="w-12 h-12 mb-3 opacity-20" />
-            <p className="font-medium">Tidak ada data</p>
-            <p className="text-sm mt-1">Coba ubah filter atau tambah pergerakan stok</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr style={{ borderBottom: "1px solid var(--t-divider)", background: "var(--t-card-bg)" }}>
-                  {["Produk", "Jenis", "Jumlah", "Harga/Satuan", "Nilai", "Catatan", "Waktu"].map((h, i) => (
-                    <th
-                      key={h}
-                      className={`px-5 py-3.5 text-xs font-semibold uppercase tracking-wide ${
-                        i >= 2 && i <= 4 ? "text-right" : "text-left"
-                      }`}
-                      style={{ color: "var(--t-text-muted)" }}
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.movements.map((m, idx) => {
-                  const cfg = TYPE_CONFIG[m.type as keyof typeof TYPE_CONFIG];
-                  const Icon = cfg.icon;
-                  return (
-                    <tr
-                      key={m.id}
-                      className="t-table-row transition-colors"
-                      style={{ borderBottom: "1px solid var(--t-divider)" }}
-                    >
-                      {/* Produk */}
-                      <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-2.5">
-                          <div
-                            className="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 border"
-                            style={{ borderColor: "var(--t-card-border)", background: "var(--t-input-bg)" }}
-                          >
-                            {m.product.imageUrl ? (
-                              <Image
-                                src={m.product.imageUrl}
-                                alt={m.product.name}
-                                width={36}
-                                height={36}
-                                className="object-cover w-full h-full"
-                                unoptimized
-                              />
-                            ) : (
-                              <Package className="w-4 h-4 opacity-30" style={{ color: "var(--t-text-muted)" }} />
-                            )}
-                          </div>
-                          <span className="font-medium" style={{ color: "var(--t-text-primary)" }}>
-                            {m.product.name}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Jenis */}
-                      <td className="px-5 py-3.5">
-                        <Badge className={`border-0 text-xs gap-1 ${cfg.badge}`}>
-                          <Icon className="w-3 h-3" />
-                          {cfg.label}
-                        </Badge>
-                        <p className="text-[10px] mt-0.5" style={{ color: "var(--t-text-muted)" }}>
-                          {cfg.desc}
-                        </p>
-                      </td>
-
-                      {/* Jumlah */}
-                      <td className="px-5 py-3.5 text-right">
-                        <span className="font-semibold" style={{ color: cfg.valueColor }}>
-                          {cfg.valueSign}
-                          {formatNumber(m.quantity)} {m.product.unit}
-                        </span>
-                      </td>
-
-                      {/* Harga/Satuan */}
-                      <td className="px-5 py-3.5 text-right text-xs" style={{ color: "var(--t-text-muted)" }}>
-                        {formatRupiah(m.pricePerUnit)}
-                        <span className="block text-[10px]">/{m.product.unit}</span>
-                      </td>
-
-                      {/* Nilai */}
-                      <td className="px-5 py-3.5 text-right">
-                        <span
-                          className="font-bold text-sm"
-                          style={{
-                            color:
-                              m.type === "TERJUAL"
-                                ? "#6366f1"
-                                : m.type === "RUSAK"
-                                ? "#f43f5e"
-                                : m.type === "PANEN_MASUK"
-                                ? "var(--t-text-secondary)"
-                                : "#f59e0b",
-                          }}
-                        >
-                          {m.type === "TERJUAL" ? "+" : m.type === "RUSAK" ? "−" : ""}
-                          {formatRupiah(m.totalNilai)}
-                        </span>
-                      </td>
-
-                      {/* Catatan */}
-                      <td
-                        className="px-5 py-3.5 text-xs max-w-[180px] truncate"
-                        style={{ color: "var(--t-text-muted)" }}
-                        title={m.note ?? ""}
-                      >
-                        {m.note ?? "—"}
-                      </td>
-
-                      {/* Waktu */}
-                      <td className="px-5 py-3.5 text-xs whitespace-nowrap" style={{ color: "var(--t-text-muted)" }}>
-                        {new Date(m.recordedAt).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                        <span className="block text-[10px] opacity-70">
-                          {new Date(m.recordedAt).toLocaleTimeString("id-ID", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* ── Pagination ── */}
-        {data.totalPages > 1 && (
-          <div
-            className="px-5 py-4 flex items-center justify-between gap-3 flex-wrap"
-            style={{ borderTop: "1px solid var(--t-divider)" }}
-          >
-            <p className="text-xs" style={{ color: "var(--t-text-muted)" }}>
-              Menampilkan{" "}
-              <span className="font-semibold" style={{ color: "var(--t-text-primary)" }}>
-                {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, data.total)}
-              </span>{" "}
-              dari <span className="font-semibold" style={{ color: "var(--t-text-primary)" }}>{data.total}</span> entri
-            </p>
-
-            <div className="flex items-center gap-1.5">
-              {/* Prev */}
-              {page > 1 ? (
-                <Link
-                  href={buildUrl({ page: String(page - 1) })}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center border transition-colors hover:opacity-80"
-                  style={{ background: "var(--t-input-bg)", borderColor: "var(--t-input-border)", color: "var(--t-text-secondary)" }}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Link>
-              ) : (
-                <span
-                  className="w-8 h-8 rounded-lg flex items-center justify-center border opacity-30"
-                  style={{ background: "var(--t-input-bg)", borderColor: "var(--t-input-border)", color: "var(--t-text-secondary)" }}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </span>
-              )}
-
-              {/* Page numbers */}
-              {Array.from({ length: Math.min(data.totalPages, 7) }, (_, i) => {
-                let pageNum: number;
-                if (data.totalPages <= 7) {
-                  pageNum = i + 1;
-                } else if (page <= 4) {
-                  pageNum = i + 1;
-                } else if (page >= data.totalPages - 3) {
-                  pageNum = data.totalPages - 6 + i;
-                } else {
-                  pageNum = page - 3 + i;
-                }
-                const isActive = pageNum === page;
-                return (
-                  <Link
-                    key={pageNum}
-                    href={buildUrl({ page: String(pageNum) })}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold border transition-colors"
-                    style={
-                      isActive
-                        ? { background: "#6366f1", borderColor: "#6366f1", color: "#fff" }
-                        : { background: "var(--t-input-bg)", borderColor: "var(--t-input-border)", color: "var(--t-text-secondary)" }
-                    }
-                  >
-                    {pageNum}
-                  </Link>
-                );
-              })}
-
-              {/* Next */}
-              {page < data.totalPages ? (
-                <Link
-                  href={buildUrl({ page: String(page + 1) })}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center border transition-colors hover:opacity-80"
-                  style={{ background: "var(--t-input-bg)", borderColor: "var(--t-input-border)", color: "var(--t-text-secondary)" }}
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </Link>
-              ) : (
-                <span
-                  className="w-8 h-8 rounded-lg flex items-center justify-center border opacity-30"
-                  style={{ background: "var(--t-input-bg)", borderColor: "var(--t-input-border)", color: "var(--t-text-secondary)" }}
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
+      <RiwayatTableClient movements={data.movements} />
     </div>
   );
 }

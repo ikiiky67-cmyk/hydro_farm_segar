@@ -28,7 +28,11 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("Email atau password salah. Silakan coba lagi.");
+        if (result.error === "Configuration" || result.error.includes("RATE_LIMIT")) {
+          setError("Terlalu banyak percobaan. Akun dikunci sementara (15 menit).");
+        } else {
+          setError("Email atau password salah. Coba lagi.");
+        }
       } else {
         router.push("/dashboard");
         router.refresh();
@@ -83,7 +87,7 @@ export default function LoginPage() {
               className="text-2xl sm:text-3xl font-extrabold tracking-tight"
               style={{ color: "var(--t-text-primary)" }}
             >
-              HydroFarm Admin
+              Admin Dashboard
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
@@ -210,7 +214,7 @@ export default function LoginPage() {
               borderColor: "var(--t-divider)",
             }}
           >
-            Sistem manajemen eksklusif untuk admin HydroFarm
+            Sistem manajemen eksklusif untuk admin
           </p>
         </div>
       </motion.div>

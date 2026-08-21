@@ -1,42 +1,57 @@
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PublicNavbar } from "@/components/layout/PublicNavbar";
 import { ProductCard } from "@/components/product/ProductCard";
-import { AnimatedHero } from "@/components/home/AnimatedHero";
+import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { LandingSections } from "@/components/home/LandingSections";
 
 export async function generateMetadata(): Promise<Metadata> {
   const profile = await prisma.businessProfile.findFirst();
   return {
-    title: profile?.farmName ?? "HydroFarm Segar",
+    title: profile?.farmName ?? "ANDANA FARM HIDROPONIK",
     description:
       profile?.tagline ?? "Sayuran Hidroponik Segar Langsung dari Kebun — 100% Bebas Pestisida",
   };
 }
 
 export default async function HomePage() {
-  const [profile, rawProducts, promos] = await Promise.all([
+  const [profile, rawProducts, promos, testimonials, farmFeatures] = await Promise.all([
     prisma.businessProfile.findFirst(),
     prisma.product.findMany({
       where: { isFeatured: true, isActive: true },
       take: 6,
     }),
     prisma.promoContent.findMany({
-      where: { status: "AKTIF" },
+      where: {
+        status: "AKTIF",
+        OR: [
+          { startDate: null, endDate: null },
+          { startDate: { lte: new Date() }, endDate: { gte: new Date() } },
+          { startDate: { lte: new Date() }, endDate: null },
+          { startDate: null, endDate: { gte: new Date() } },
+        ]
+      },
       orderBy: { sortOrder: "asc" },
-      take: 3,
+      take: 10,
+    }),
+    prisma.testimonial.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    }),
+    prisma.farmFeature.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: "asc" },
     }),
   ]);
 
   const featuredProducts = rawProducts.map((p) => ({
     ...p,
     pricePerKg: parseFloat(p.pricePerKg.toString()),
+    minStock: parseFloat(p.minStock.toString()),
   }));
 
   const farmName = profile?.farmName ?? "HydroFarm Segar";
-  const tagline =
-    profile?.tagline ?? "Sayuran Hidroponik Segar, Sehat, Langsung dari Kebun";
   const whatsapp = profile?.whatsapp ?? "";
 
   return (
@@ -44,47 +59,21 @@ export default async function HomePage() {
       className="min-h-screen transition-colors duration-500"
       style={{ background: "var(--pub-bg)", color: "var(--pub-text)" }}
     >
-      <PublicNavbar farmName={farmName} />
+      <PublicNavbar farmName={farmName} logoUrl={profile?.logoUrl || null} />
 
       {/* ─────────────────────────────────────────
-          HERO SECTION
+          HERO CAROUSEL
          ───────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pub-hero-dark pub-hero-light">
-        {/* Animated gradient orbs */}
-        <div
-          className="pub-orb-1 absolute top-[-10%] left-[-5%] w-[600px] h-[600px] rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(16,185,129,0.18) 0%, rgba(16,185,129,0.04) 50%, transparent 70%)",
-          }}
-        />
-        <div
-          className="pub-orb-2 absolute bottom-[-15%] right-[-8%] w-[500px] h-[500px] rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(20,184,166,0.15) 0%, rgba(20,184,166,0.03) 50%, transparent 70%)",
-          }}
-        />
-        <div
-          className="pub-orb-3 absolute top-[40%] right-[15%] w-[300px] h-[300px] rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(52,211,153,0.1) 0%, transparent 65%)",
-          }}
-        />
-
-        {/* Grid background */}
-        <div
-          className="pub-grid-bg absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-
-        <AnimatedHero tagline={tagline} whatsapp={whatsapp} />
-      </section>
+      <HeroCarousel 
+        whatsapp={whatsapp} 
+        bannerUrl={profile?.bannerUrl} 
+        title={profile?.heroHomeTitle} 
+        subtitle={profile?.heroHomeSubtitle} 
+        title2={profile?.heroHomeTitle2} 
+        subtitle2={profile?.heroHomeSubtitle2} 
+        title3={profile?.heroHomeTitle3} 
+        subtitle3={profile?.heroHomeSubtitle3} 
+      />
 
       {/* ─────────────────────────────────────────
           ALL CLIENT SECTIONS (untuk animasi)
@@ -95,18 +84,24 @@ export default async function HomePage() {
           title: p.title,
           description: p.description,
           badgeText: p.badgeText,
+          imageUrl: p.imageUrl,
         }))}
         featuredProducts={featuredProducts}
+        testimonials={testimonials}
+        farmFeatures={farmFeatures}
         profile={
           profile
             ? {
-                farmName,
-                description: profile.description,
-                address: profile.address,
-                phone: profile.phone,
-                instagram: profile.instagram,
-                whatsapp: profile.whatsapp,
-              }
+              farmName,
+              description: profile.description,
+              address: profile.address,
+              phone: profile.phone,
+              instagram: profile.instagram,
+              whatsapp: profile.whatsapp,
+              logoUrl: profile.logoUrl,
+              whyChooseUsTitle: profile.whyChooseUsTitle,
+              whyChooseUsSubtitle: profile.whyChooseUsSubtitle,
+            }
             : null
         }
         whatsapp={whatsapp}

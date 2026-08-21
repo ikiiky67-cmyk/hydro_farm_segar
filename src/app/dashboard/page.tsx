@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { getDashboardMetrics, getSalesChartData } from "@/actions/analytics.actions";
+import { getLowStockProducts } from "@/actions/stock.actions";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { SalesChart } from "@/components/dashboard/SalesChart";
 import { TopProductsChart } from "@/components/dashboard/TopProductsChart";
-import { TrendingUp, ShoppingCart, Package, Eye } from "lucide-react";
+import { TrendingUp, ShoppingCart, Package, Eye, ShieldAlert, AlertTriangle } from "lucide-react";
 import type { Transaction, TransactionItem, Product } from "@prisma/client";
 import { formatRupiah, formatDate } from "@/lib/utils";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import bcrypt from "bcryptjs";
+import Link from "next/link";
 
 type TxWithItems = Transaction & {
   items: (TransactionItem & { product: Pick<Product, "name"> })[];
@@ -14,10 +19,30 @@ type TxWithItems = Transaction & {
 export const metadata: Metadata = { title: "Dashboard" };
 
 export default async function DashboardPage() {
-  const [metrics, chartData] = await Promise.all([
+  const [metrics, chartData, lowStockProducts, profile] = await Promise.all([
     getDashboardMetrics(),
     getSalesChartData(),
+    getLowStockProducts(),
+    prisma.businessProfile.findFirst(),
   ]);
+  const farmName = profile?.farmName || "Hydro Farm Segar";
+
+  // Cek apakah admin masih menggunakan password default
+  let isDefaultPassword = false;
+  try {
+    const session = await auth();
+    if (session?.user?.email) {
+      const admin = await prisma.admin.findUnique({
+        where: { email: session.user.email },
+        select: { password: true },
+      });
+      if (admin) {
+        isDefaultPassword = await bcrypt.compare("admin123", admin.password);
+      }
+    }
+  } catch {
+    // Abaikan error pengecekan password, jangan blokir dashboard
+  }
 
   const metricCards = [
     {
@@ -64,7 +89,7 @@ export default async function DashboardPage() {
       <div>
         <h1 className="text-2xl font-bold" style={{ color: "var(--t-text-primary)" }}>Dashboard</h1>
         <p className="text-sm mt-1" style={{ color: "var(--t-text-muted)" }}>
-          Ringkasan operasional dan analitik HydroFarm Segar
+          Ringkasan operasional dan analitik {farmName}
         </p>
       </div>
 

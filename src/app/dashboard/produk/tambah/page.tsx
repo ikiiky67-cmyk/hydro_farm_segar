@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ProductForm } from "@/components/dashboard/ProductForm";
 import { Package } from "lucide-react";
 
-export const metadata: Metadata = { title: "Tambah Produk | HydroFarm" };
+export const metadata: Metadata = { title: "Tambah Produk" };
 
 export default function TambahProdukPage() {
   return (

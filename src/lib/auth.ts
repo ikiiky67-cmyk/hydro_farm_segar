@@ -13,6 +13,11 @@ const loginSchema = z.object({
   password: z.string().min(6),
 });
 
+// Simple in-memory rate limiter for login
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+const loginAttempts = new Map<string, { count: number; lockoutUntil: number }>();
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   providers: [
@@ -23,16 +28,39 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const { email, password } = parsed.data;
 
-        const admin = await prisma.admin.findUnique({ where: { email } });
-        if (!admin) return null;
+        // Rate Limiting Check
+        const attemptRecord = loginAttempts.get(email);
+        if (attemptRecord && attemptRecord.lockoutUntil > Date.now()) {
+          throw new Error("RATE_LIMIT_EXCEEDED");
+        }
 
-        const passwordMatch = await bcrypt.compare(password, admin.password);
-        if (!passwordMatch) return null;
+        const admin = await prisma.admin.findUnique({ where: { email } });
+        
+        let isValid = false;
+        if (admin) {
+          isValid = await bcrypt.compare(password, admin.password);
+        }
+
+        if (!isValid) {
+          // Increment failed attempts
+          if (attemptRecord) {
+            attemptRecord.count += 1;
+            if (attemptRecord.count >= MAX_LOGIN_ATTEMPTS) {
+              attemptRecord.lockoutUntil = Date.now() + LOCKOUT_DURATION_MS;
+            }
+          } else {
+            loginAttempts.set(email, { count: 1, lockoutUntil: 0 });
+          }
+          return null; // Invalid credentials
+        }
+
+        // Reset attempts on successful login
+        loginAttempts.delete(email);
 
         return {
-          id: admin.id,
-          name: admin.name,
-          email: admin.email,
+          id: admin!.id,
+          name: admin!.name,
+          email: admin!.email,
         };
       },
     }),

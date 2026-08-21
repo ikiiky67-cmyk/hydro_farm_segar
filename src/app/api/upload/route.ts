@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { auth } from "@/lib/auth";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE_MB = 5;
 
 export async function POST(request: NextRequest) {
   try {
+    // Cek autentikasi — hanya admin yang boleh upload
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized — silakan login terlebih dahulu." }, { status: 401 });
+    }
+
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
 
@@ -30,14 +37,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const folder = (formData.get("folder") as string) || "products";
+    
+    // Sanitize folder to prevent path traversal
+    const safeFolder = folder.replace(/[^a-zA-Z0-9_\-\/]/g, "").replace(/\.\./g, "");
+
     // Buat nama file unik dengan timestamp
     const ext = file.name.split(".").pop() || "jpg";
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).slice(2, 8);
-    const filename = `product_${timestamp}_${randomStr}.${ext}`;
+    const filename = `${safeFolder.replace(/\//g, "_")}_${timestamp}_${randomStr}.${ext}`;
 
     // Pastikan direktori upload ada
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "products");
+    const uploadDir = path.join(process.cwd(), "public", "uploads", safeFolder);
     await mkdir(uploadDir, { recursive: true });
 
     // Simpan file
@@ -46,7 +58,7 @@ export async function POST(request: NextRequest) {
     await writeFile(filePath, buffer);
 
     // Return URL publik
-    const publicUrl = `/uploads/products/${filename}`;
+    const publicUrl = `/uploads/${safeFolder}/${filename}`;
     return NextResponse.json({ url: publicUrl });
   } catch (err) {
     console.error("[UPLOAD ERROR]", err);

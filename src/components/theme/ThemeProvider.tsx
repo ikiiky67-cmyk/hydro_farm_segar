@@ -7,14 +7,14 @@ type Theme = "dark" | "light";
 const ThemeContext = createContext<{
   theme: Theme;
   toggleTheme: () => void;
-}>({ theme: "dark", toggleTheme: () => {} });
+}>({ theme: "light", toggleTheme: () => {} });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
     const saved = localStorage.getItem("hydrofarm-theme") as Theme | null;
-    const initial = saved ?? "dark";
+    const initial = saved ?? "light";
     setTheme(initial);
     document.documentElement.classList.toggle("dark", initial === "dark");
     document.documentElement.classList.toggle("light-mode", initial === "light");

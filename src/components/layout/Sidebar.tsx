@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Package, Warehouse, Receipt, BarChart3,
   Settings, TrendingUp, ChevronRight, Globe, Image, Menu, X, FileText,
+  MessageSquareQuote
 } from "lucide-react";
 
 const navItems = [
@@ -19,9 +20,80 @@ const navItems = [
   { type: "separator", label: "CMS" } as const,
   { label: "Profil Bisnis", href: "/dashboard/cms/profil", icon: Settings },
   { label: "Promo & Banner", href: "/dashboard/cms/promo", icon: Image },
+  { label: "Keunggulan", href: "/dashboard/cms/keunggulan", icon: LayoutDashboard }, // Assuming we imported ListChecks earlier or can just use LayoutDashboard/BarChart
+  { label: "Testimoni", href: "/dashboard/cms/testimoni", icon: MessageSquareQuote },
 ];
 
-function SidebarContent({ pathname, onLinkClick }: { pathname: string; onLinkClick?: () => void }) {
+export function Sidebar({ farmName = "HydroFarm", logoUrl }: { farmName?: string, logoUrl?: string | null }) {
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Initialize mobile state on mount
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile(); // Check immediately
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const closeSidebar = () => {
+    if (isMobile) setIsOpen(false);
+  };
+
+  return (
+    <>
+      {/* Mobile Toggle Button (Navbar) */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 border-b t-divider t-page z-40 flex items-center px-4 transition-theme">
+        <button
+          onClick={() => setIsOpen(true)}
+          className="p-2 rounded-lg hover:bg-zinc-800 transition-colors mr-3"
+        >
+          <Menu className="w-5 h-5 t-text-primary" />
+        </button>
+        <div className="flex items-center gap-2">
+          {logoUrl ? (
+            <div className="w-8 h-8 rounded-lg overflow-hidden bg-transparent flex items-center justify-center">
+              <img src={logoUrl} alt={farmName} className="w-full h-full object-contain" />
+            </div>
+          ) : (
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-500/20 border border-indigo-500/30">
+              <TrendingUp className="w-4 h-4 text-indigo-400" />
+            </div>
+          )}
+          <span className="font-bold t-text-primary tracking-tight">{farmName}</span>
+        </div>
+      </div>
+
+      {/* Backdrop (Mobile) */}
+      <AnimatePresence>
+        {isOpen && isMobile && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Sidebar Container */}
+      <motion.aside
+        initial={{ x: isMobile ? "-100%" : 0 }}
+        animate={{ x: isMobile ? (isOpen ? 0 : "-100%") : 0 }}
+        transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 w-72 t-sidebar shadow-2xl lg:shadow-none border-r t-divider lg:static flex flex-col transition-theme",
+        )}
+      >
+        <SidebarContent pathname={pathname} onLinkClick={closeSidebar} farmName={farmName} logoUrl={logoUrl} />
+      </motion.aside>
+    </>
+  );
+}
+
+function SidebarContent({ pathname, onLinkClick, farmName, logoUrl }: { pathname: string; onLinkClick?: () => void; farmName: string; logoUrl?: string | null }) {
   const isActive = (href: string, exact?: boolean) =>
     exact ? pathname === href : pathname.startsWith(href);
 
@@ -30,13 +102,19 @@ function SidebarContent({ pathname, onLinkClick }: { pathname: string; onLinkCli
       {/* Logo */}
       <div className="h-16 flex items-center px-6 border-b t-divider flex-shrink-0 transition-theme">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-[0_0_16px_rgba(99,102,241,0.2)]"
-            style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", }}
-          >
-            <TrendingUp className="w-4.5 h-4.5 text-white" />
-          </div>
+          {logoUrl ? (
+            <div className="w-9 h-9 rounded-xl overflow-hidden bg-transparent flex items-center justify-center">
+              <img src={logoUrl} alt={farmName} className="w-full h-full object-contain" />
+            </div>
+          ) : (
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-[0_0_16px_rgba(99,102,241,0.2)]"
+              style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+            >
+              <TrendingUp className="w-4.5 h-4.5 text-white" />
+            </div>
+          )}
           <div>
-            <p className="text-sm font-bold t-text-primary tracking-tight">HydroFarm</p>
+            <p className="text-sm font-bold t-text-primary tracking-tight truncate max-w-[150px]">{farmName}</p>
             <p className="text-[10px] font-semibold tracking-widest uppercase" style={{ color: "#818cf8" }}>Sales Dashboard</p>
           </div>
         </div>
@@ -132,59 +210,5 @@ function SidebarContent({ pathname, onLinkClick }: { pathname: string; onLinkCli
         </Link>
       </div>
     </div>
-  );
-}
-
-export function Sidebar() {
-  const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  return (
-    <>
-      {/* Mobile Hamburger */}
-      <button
-        className="fixed top-4 left-4 z-50 md:hidden w-9 h-9 rounded-xl t-card border flex items-center justify-center transition-theme"
-        style={{ color: "var(--t-text-secondary)" }}
-        onClick={() => setMobileOpen(true)}
-      >
-        <Menu className="w-4 h-4" />
-      </button>
-
-      {/* Mobile Drawer Overlay */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
-              onClick={() => setMobileOpen(false)}
-            />
-            <motion.aside
-              initial={{ x: -280 }}
-              animate={{ x: 0 }}
-              exit={{ x: -280 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="t-sidebar fixed left-0 top-0 bottom-0 z-50 w-64 border-r flex flex-col md:hidden transition-theme"
-            >
-              <button
-                className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center"
-                style={{ background: "var(--t-input-bg)", color: "var(--t-text-secondary)" }}
-                onClick={() => setMobileOpen(false)}
-              >
-                <X className="w-4 h-4" />
-              </button>
-              <SidebarContent pathname={pathname} onLinkClick={() => setMobileOpen(false)} />
-            </motion.aside>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* Desktop Sidebar */}
-      <aside className="t-sidebar hidden md:flex w-64 flex-shrink-0 border-r flex-col transition-theme">
-        <SidebarContent pathname={pathname} />
-      </aside>
-    </>
   );
 }

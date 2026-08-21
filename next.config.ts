@@ -24,11 +24,10 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "10mb",
     },
   },
+  // Nonaktifkan dev indicator overlay
+  devIndicators: false,
+  output: "standalone",
 };
-module.exports = {
-  devIndicators: {
-    buildActivity: false,
-  },
-}
 
 export default nextConfig;
+

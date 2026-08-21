@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createStockMovement } from "@/actions/stock.actions";
 import {
   TrendingUp, TrendingDown, Trash2, RotateCcw,
-  Package, X, Check, Minus, Plus, Warehouse
+  Package, X, Check, Minus, Plus, Warehouse, ChevronLeft, ChevronRight, Search
 } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -118,7 +118,16 @@ export function StokPOS({ products }: { products: Product[] }) {
     startTransition(async () => {
       const result = await createStockMovement(formData);
       if (result?.error) {
-        setError("Gagal menyimpan. Periksa kembali.");
+        if (typeof result.error === 'object' && result.error !== null) {
+          const fieldErrors = result.error as Record<string, string[]>;
+          if (fieldErrors.quantity?.[0]) {
+            setError(fieldErrors.quantity[0]);
+          } else {
+            setError("Gagal menyimpan. Periksa kembali.");
+          }
+        } else {
+          setError(String((result as any).error) || "Terjadi kesalahan.");
+        }
       } else {
         setSuccess(true);
         router.refresh();
@@ -132,21 +141,51 @@ export function StokPOS({ products }: { products: Product[] }) {
   const stockColor = (stock: number) =>
     stock < 1 ? "#f43f5e" : stock < 5 ? "#f59e0b" : "#6366f1";
 
+  // SEARCH & PAGINATION
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8; // Tampilkan 8 per halaman di grid
+
+  const filteredProducts = products.filter((p) =>
+    p.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
-    <div className="flex gap-6">
+    <div className="flex flex-col xl:flex-row gap-6">
       {/* ── Grid Produk ── */}
-      <div className="flex-1 min-w-0">
-        {products.length === 0 ? (
+      <div className="flex-1 min-w-0 flex flex-col space-y-4">
+        {/* Search Bar */}
+        <div className="flex items-center bg-[var(--t-card-bg)] border border-[var(--t-card-border)] px-4 py-2.5 rounded-2xl transition-theme focus-within:ring-2 focus-within:ring-indigo-500/50">
+          <Search className="w-4 h-4 mr-3 opacity-50" style={{ color: "var(--t-text-muted)" }} />
+          <input
+            type="text"
+            placeholder="Cari produk sayuran..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1); // Reset page on search
+            }}
+            className="w-full bg-transparent outline-none text-sm placeholder:text-[var(--t-text-muted)] text-[var(--t-text-primary)] transition-colors"
+          />
+        </div>
+
+        {paginatedProducts.length === 0 ? (
           <div
             className="flex flex-col items-center justify-center py-20 rounded-2xl border"
             style={{ color: "var(--t-text-muted)", borderColor: "var(--t-card-border)", background: "var(--t-card-bg)" }}
           >
             <Warehouse className="w-12 h-12 mb-3 opacity-20" />
-            <p className="font-medium">Belum ada produk aktif</p>
+            <p className="font-medium">Tidak ada produk ditemukan</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
-            {products.map((p) => {
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {paginatedProducts.map((p) => {
               const isSelected = selectedProduct?.id === p.id;
               return (
                 <motion.button
@@ -198,6 +237,28 @@ export function StokPOS({ products }: { products: Product[] }) {
                 </motion.button>
               );
             })}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-6">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="p-2 rounded-xl bg-[var(--t-card-bg)] border border-[var(--t-card-border)] disabled:opacity-50 hover:bg-indigo-500/10 transition-colors"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <span className="text-sm font-semibold" style={{ color: "var(--t-text-secondary)" }}>
+              Halaman {currentPage} dari {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-xl bg-[var(--t-card-bg)] border border-[var(--t-card-border)] disabled:opacity-50 hover:bg-indigo-500/10 transition-colors"
+            >
+              <ChevronRight className="w-5 h-5" /> 
+            </button>
           </div>
         )}
       </div>

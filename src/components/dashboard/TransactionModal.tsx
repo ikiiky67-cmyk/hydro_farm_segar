@@ -10,18 +10,34 @@ const modalStyle = {
   borderColor: "var(--t-card-border)",
 } as React.CSSProperties;
 
-export function TransactionModal() {
-  const [open, setOpen] = useState(false);
+export function TransactionModal({ 
+  initialData, 
+  forceOpen, 
+  onForceClose 
+}: { 
+  initialData?: any; 
+  forceOpen?: boolean; 
+  onForceClose?: () => void 
+}) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  const open = forceOpen !== undefined ? forceOpen : internalOpen;
+  const setOpen = (val: boolean) => {
+    if (onForceClose && !val) onForceClose();
+    else setInternalOpen(val);
+  };
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold px-4 py-2.5 rounded-xl text-sm transition-all duration-200 shadow-[0_0_20px_rgba(99,102,241,0.25)] hover:shadow-[0_0_25px_rgba(99,102,241,0.35)]"
-      >
-        <Plus className="w-4 h-4" />
-        Catat Transaksi
-      </button>
+      {!forceOpen && (
+        <button
+          onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold px-4 py-2.5 rounded-xl text-sm transition-all duration-200 shadow-[0_0_20px_rgba(99,102,241,0.25)] hover:shadow-[0_0_25px_rgba(99,102,241,0.35)]"
+        >
+          <Plus className="w-4 h-4" />
+          Catat Transaksi
+        </button>
+      )}
 
       <AnimatePresence>
         {open && (
@@ -44,7 +60,7 @@ export function TransactionModal() {
               <div className="flex items-center justify-between mb-5">
                 <div>
                   <h2 className="text-lg font-bold" style={{ color: "var(--t-text-primary)" }}>
-                    Catat Transaksi
+                    {initialData ? "Edit Transaksi" : "Catat Transaksi"}
                   </h2>
                   <p className="text-xs mt-0.5" style={{ color: "var(--t-text-muted)" }}>
                     Pengeluaran, pemasukan lain, atau modal
@@ -58,7 +74,7 @@ export function TransactionModal() {
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              <TransactionForm onClose={() => setOpen(false)} />
+              <TransactionForm onClose={() => setOpen(false)} initialData={initialData} />
             </motion.div>
           </>
         )}

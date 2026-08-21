@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { ProductForm } from "@/components/dashboard/ProductForm";
 import { Pencil } from "lucide-react";
 
-export const metadata: Metadata = { title: "Edit Produk | HydroFarm" };
+export const metadata: Metadata = { title: "Edit Produk" };
 
 export default async function EditProdukPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -15,6 +15,7 @@ export default async function EditProdukPage({ params }: { params: Promise<{ id:
   const product = {
     ...raw,
     pricePerKg: parseFloat(raw.pricePerKg.toString()),
+    minStock: parseFloat(raw.minStock.toString()),
   };
 
   return (

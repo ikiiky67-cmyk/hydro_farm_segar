@@ -42,6 +42,41 @@ export async function createStockMovement(formData: FormData) {
   const totalValue = pricePerUnit * quantity;
   const occurredAt = recordedAt ?? new Date();
 
+  // Hitung stok saat ini untuk validasi
+  const movements = await prisma.stockMovement.groupBy({
+    by: ["type"],
+    where: { productId },
+    _sum: { quantity: true },
+  });
+
+  let currentStock = 0;
+  for (const m of movements) {
+    const qty = parseFloat((m._sum.quantity ?? 0).toString());
+    if (m.type === "PANEN_MASUK" || m.type === "PENYESUAIAN") currentStock += qty;
+    else currentStock -= qty;
+  }
+
+  // Validasi M3.1: Cegah pengurangan stok melebihi stok tersedia
+  if ((type === "TERJUAL" || type === "RUSAK") && quantity > currentStock) {
+    let errorMessage = "";
+    
+    if (type === "TERJUAL") {
+      if (currentStock <= 0) {
+        errorMessage = `Gagal melakukan penjualan. Stok ${product.name} saat ini kosong (0).`;
+      } else {
+        errorMessage = `Gagal melakukan penjualan. Stok tidak mencukupi (Sisa stok: ${currentStock} ${product.unit}).`;
+      }
+    } else if (type === "RUSAK") {
+      errorMessage = `Gagal mencatat stok rusak. Jumlah melebihi stok yang tersedia (Sisa stok: ${currentStock} ${product.unit}).`;
+    }
+
+    return {
+      error: {
+        quantity: [errorMessage],
+      },
+    };
+  }
+
   // Jalankan dalam satu transaksi DB
   await prisma.$transaction(async (tx) => {
     // 1. Catat StockMovement
@@ -159,7 +194,7 @@ export async function getStockMovementsPaginated({
 export async function getAllStockSummary() {
   const products = await prisma.product.findMany({
     where: { isActive: true },
-    select: { id: true, name: true, unit: true, pricePerKg: true, imageUrl: true },
+    select: { id: true, name: true, unit: true, pricePerKg: true, imageUrl: true, minStock: true },
   });
 
   type ProductSelect = {
@@ -168,6 +203,7 @@ export async function getAllStockSummary() {
     unit: string;
     imageUrl: string | null;
     pricePerKg: { toString(): string };
+    minStock: { toString(): string };
   };
 
   return Promise.all(
@@ -189,7 +225,13 @@ export async function getAllStockSummary() {
         ...p,
         currentStock: Math.max(0, stock),
         pricePerKg: parseFloat(p.pricePerKg.toString()),
+        minStock: parseFloat(p.minStock.toString()),
       };
     })
   );
+}
+
+export async function getLowStockProducts() {
+  const allStock = await getAllStockSummary();
+  return allStock.filter(p => p.currentStock <= (p.minStock as unknown as number));
 }

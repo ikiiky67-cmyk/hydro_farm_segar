@@ -3,12 +3,16 @@ import { getTransactions } from "@/actions/transaction.actions";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { TransactionModal } from "@/components/dashboard/TransactionModal";
+import { TransactionActionMenu } from "@/components/dashboard/TransactionActionMenu";
+import { TransactionTableClient } from "@/components/dashboard/TransactionTableClient";
 import {
   Receipt, TrendingUp, TrendingDown, DollarSign,
-  Wallet, ShoppingCart, Info,
+  Wallet, ShoppingCart, Info, Filter, X
 } from "lucide-react";
+import Link from "next/link";
+import { startOfMonth, endOfMonth, parseISO, isValid } from "date-fns";
 
-export const metadata: Metadata = { title: "Transaksi | HydroFarm" };
+export const metadata: Metadata = { title: "Transaksi" };
 
 const typeConfig: Record<string, {
   label: string;
@@ -20,8 +24,28 @@ const typeConfig: Record<string, {
   PENGELUARAN: { label: "Pengeluaran",     badge: "bg-rose-500/15 text-rose-400",       icon: TrendingDown },
 };
 
-export default async function TransaksiPage() {
-  const transactions = await getTransactions(100);
+export default async function TransaksiPage(props: {
+  searchParams: Promise<{ start?: string; end?: string; preset?: string }>;
+}) {
+  const sp = await props.searchParams;
+  let startDate: Date | undefined;
+  let endDate: Date | undefined;
+
+  // Preset filter logic
+  if (sp.preset === "this_month") {
+    const now = new Date();
+    startDate = startOfMonth(now);
+    endDate = endOfMonth(now);
+  } else if (sp.start && sp.end) {
+    const s = parseISO(sp.start);
+    const e = parseISO(sp.end);
+    if (isValid(s) && isValid(e)) {
+      startDate = s;
+      endDate = e;
+    }
+  }
+
+  const transactions = await getTransactions({ limit: 100, startDate, endDate });
 
   const totalPenjualan = transactions
     .filter((t) => t.type === "PENJUALAN")
@@ -83,18 +107,31 @@ export default async function TransaksiPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {/* Info hint */}
-          <div
-            className="hidden sm:flex items-center gap-2 text-xs px-3 py-2 rounded-xl border"
-            style={{
-              background: "rgba(99,102,241,0.05)",
-              borderColor: "rgba(99,102,241,0.2)",
-              color: "var(--t-text-muted)",
-            }}
-          >
-            <Info className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
-            Penjualan otomatis tercatat via menu Stok
+          {/* Quick Filters */}
+          <div className="flex bg-zinc-100 dark:bg-white/5 p-1 rounded-xl">
+            <Link 
+              href="/dashboard/transaksi" 
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${!sp.preset ? 'bg-white dark:bg-zinc-800 shadow-sm text-indigo-500' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
+            >
+              Semua Waktu
+            </Link>
+            <Link 
+              href="/dashboard/transaksi?preset=this_month" 
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${sp.preset === 'this_month' ? 'bg-white dark:bg-zinc-800 shadow-sm text-indigo-500' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
+            >
+              Bulan Ini
+            </Link>
           </div>
+
+          <a
+            href={`/api/export/transactions${sp.preset ? `?preset=${sp.preset}` : ''}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white font-semibold px-4 py-2.5 rounded-xl text-sm transition-all duration-200 shadow-[0_0_20px_rgba(16,185,129,0.25)] hover:shadow-[0_0_25px_rgba(16,185,129,0.35)]"
+          >
+            Export CSV
+          </a>
+          
           <TransactionModal />
         </div>
       </div>
@@ -147,86 +184,7 @@ export default async function TransaksiPage() {
           </span>
         </div>
 
-        {transactions.length === 0 ? (
-          <div
-            className="flex flex-col items-center justify-center py-16"
-            style={{ color: "var(--t-text-muted)" }}
-          >
-            <Receipt className="w-12 h-12 mb-3 opacity-20" />
-            <p className="font-medium">Belum ada transaksi</p>
-            <p className="text-sm mt-1">Catat penjualan via menu Stok atau tambah transaksi manual</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr style={{ borderBottom: "1px solid var(--t-divider)" }}>
-                  {["Tanggal", "Jenis", "Keterangan", "Jumlah"].map((h, i) => (
-                    <th
-                      key={h}
-                      className={`px-5 py-3.5 text-xs font-semibold uppercase tracking-wide ${
-                        i === 3 ? "text-right" : "text-left"
-                      }`}
-                      style={{ color: "var(--t-text-muted)" }}
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {transactions.map((tx) => {
-                  const config = typeConfig[tx.type] ?? typeConfig["PEMASUKAN"];
-                  const Icon = config.icon;
-                  const isExpense = tx.type === "PENGELUARAN";
-                  return (
-                    <tr
-                      key={tx.id}
-                      className="t-table-row"
-                      style={{ borderBottom: "1px solid var(--t-divider)" }}
-                    >
-                      <td
-                        className="px-5 py-4 text-xs whitespace-nowrap"
-                        style={{ color: "var(--t-text-muted)" }}
-                      >
-                        {formatDate(tx.occurredAt)}
-                      </td>
-                      <td className="px-5 py-4">
-                        <Badge className={`border-0 text-xs gap-1.5 ${config.badge}`}>
-                          <Icon className="w-3 h-3" />
-                          {config.label}
-                        </Badge>
-                      </td>
-                      <td className="px-5 py-4 text-xs max-w-xs" style={{ color: "var(--t-text-secondary)" }}>
-                        {tx.buyerName ? (
-                          <span className="font-medium" style={{ color: "var(--t-text-primary)" }}>
-                            {tx.buyerName} —{" "}
-                          </span>
-                        ) : null}
-                        {tx.channel ? (
-                          <span
-                            className="mr-1 px-1.5 py-0.5 rounded text-[10px] font-semibold"
-                            style={{ background: "rgba(244,63,94,0.1)", color: "#f43f5e" }}
-                          >
-                            {tx.channel}
-                          </span>
-                        ) : null}
-                        {tx.note ?? "—"}
-                      </td>
-                      <td
-                        className="px-5 py-4 text-right font-bold whitespace-nowrap"
-                        style={{ color: isExpense ? "#f43f5e" : "#6366f1" }}
-                      >
-                        {isExpense ? "−" : "+"}
-                        {formatRupiah(parseFloat(tx.totalAmount.toString()))}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <TransactionTableClient transactions={transactions} />
       </div>
     </div>
   );
